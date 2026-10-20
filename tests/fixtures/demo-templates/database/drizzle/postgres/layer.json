@@ -1,0 +1,44 @@
+{
+  "id": "database/drizzle/postgres",
+  "description": "Demo fixture for database/drizzle/postgres",
+  "packageJson": {
+    "scripts": {
+      "db:generate": "drizzle-kit generate",
+      "db:migrate": "drizzle-kit migrate",
+      "db:seed": "tsx scripts/db-seed.ts"
+    },
+    "dependencies": {
+      "drizzle-orm": "^0.45.4",
+      "postgres": "^3.4.9"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.31.11",
+      "tsx": "^4.20.6"
+    }
+  },
+  "env": [
+    {
+      "key": "DATABASE_URL",
+      "example": "postgres://medha:medha@localhost:5432/medha",
+      "description": "PostgreSQL connection string"
+    }
+  ],
+  "readme": {
+    "features": ["PostgreSQL with Drizzle ORM: typed schema, migrations and seed data"],
+    "prerequisites": [
+      "PostgreSQL 14 or newer, running locally or reachable through `DATABASE_URL`"
+    ],
+    "setup": [
+      "Create the database tables: `{{ runScript }} db:migrate`",
+      "Optional: load sample data with `{{ runScript }} db:seed`"
+    ],
+    "scripts": {
+      "db:generate": "Creates a migration from schema changes",
+      "db:migrate": "Applies pending migrations",
+      "db:seed": "Loads sample projects"
+    },
+    "structure": {
+      "src/db": "Database schema, client and migrations"
+    }
+  }
+}

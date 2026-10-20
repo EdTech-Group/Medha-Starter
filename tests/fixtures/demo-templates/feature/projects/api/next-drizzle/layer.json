@@ -1,0 +1,7 @@
+{
+  "id": "feature/projects/api/next-drizzle",
+  "description": "Demo fixture for feature/projects/api/next-drizzle",
+  "readme": {
+    "features": ["Projects example: create, list, update and delete through `/api/projects`"]
+  }
+}

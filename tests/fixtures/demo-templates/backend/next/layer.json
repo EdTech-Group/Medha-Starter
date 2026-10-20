@@ -1,0 +1,13 @@
+{
+  "id": "backend/next",
+  "description": "Demo fixture for backend/next",
+  "readme": {
+    "features": [
+      "API routes in Next.js Route Handlers with request validation and central error handling",
+      "`GET /api/health` reports app and database status"
+    ],
+    "structure": {
+      "src/app/api": "API Route Handlers"
+    }
+  }
+}

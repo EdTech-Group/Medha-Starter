@@ -94,10 +94,6 @@ export function findAvailabilityIssues(stack: StackConfig): CompatibilityIssue[]
   return issues;
 }
 
-export function validateStack(stack: StackConfig): CompatibilityIssue[] {
-  return [...findAvailabilityIssues(stack), ...findCompatibilityIssues(stack)];
-}
-
 /** Lists each problem once; a fix shared by several problems is printed once, after them. */
 export function formatIssues(issues: readonly CompatibilityIssue[]): string {
   const lines: string[] = [];

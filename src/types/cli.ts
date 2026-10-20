@@ -12,6 +12,12 @@ export type CreateCliOptions = {
   readonly git: boolean;
   readonly dryRun: boolean;
   readonly debug: boolean;
+  /** Maintainers only: allow options still marked "planned" (for testing unfinished templates). */
+  readonly allowPlanned: boolean;
+  /** Check npm for a newer medha-starter and re-run it (default true). */
+  readonly updateCheck: boolean;
+  /** Skip every network lookup: the update check and newest-version resolution. */
+  readonly offline: boolean;
 };
 
 export type ParsedCliCommand =

@@ -34,15 +34,18 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "bun src/cli.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.build.json --noEmit",
-    "lint": "biome lint src tests",
-    "fmt": "biome format --write src tests",
-    "fmt:check": "biome format src tests",
+    "lint": "biome lint src tests scripts",
+    "fmt": "biome format --write src tests scripts",
+    "fmt:check": "biome format src tests scripts",
     "test": "bun test",
+    "compat": "bun scripts/compat.ts",
+    "deps:outdated": "bun scripts/deps-outdated.ts",
     "check": "bun run fmt:check && bun run lint && bun run typecheck && bun run test && bun run build"
   },
   "dependencies": {
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2",
+    "semver": "^7.7.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -50,6 +53,7 @@
     "@types/bun": "^1.4.3",
     "@types/node": "^18.19.130",
     "@types/prompts": "^2.4.9",
+    "@types/semver": "^7.8.0",
     "typescript": "^7.0.2"
   }
 }

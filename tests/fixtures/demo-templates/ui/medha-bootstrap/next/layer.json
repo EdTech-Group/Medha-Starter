@@ -1,0 +1,31 @@
+{
+  "id": "ui/medha-bootstrap/next",
+  "description": "Demo fixture for ui/medha-bootstrap/next",
+  "packageJson": {
+    "dependencies": {
+      "bootstrap": "^5.3.8",
+      "react-bootstrap": "^2.10.10"
+    }
+  },
+  "readme": {
+    "logo": {
+      "src": "public/brand/medha-logo.svg",
+      "alt": "Medha"
+    },
+    "features": [
+      "Medha visual identity: brown and amber palette, logo, sidebar workspace layout, light and dark modes",
+      "Medha page set: dashboard, tables, forms with validation, cards, calendar, editors, sign-in and error pages"
+    ],
+    "structure": {
+      "src/components/medha": "Medha layout and UI components (sidebar, topbar, panels, metric cards)",
+      "src/styles/medha": "Medha theme CSS and design tokens",
+      "public/brand": "Medha logo"
+    },
+    "sections": [
+      {
+        "title": "Design system",
+        "body": "Every screen uses the Medha theme. Colours, spacing and typography come from the `--medha-*` design tokens in `src/styles/medha/`; components in `src/components/medha/` provide the sidebar, topbar, panels and metric cards.\n\n- Build new screens from the existing Medha components before writing new markup.\n- Never hard-code colours or add another UI kit. `{{ runScript }} check:style` fails the build when a file does."
+      }
+    ]
+  }
+}

@@ -15,6 +15,24 @@ Generated applications are composed from template layers under `templates/`.
   No `Bun.*` APIs in `src/`; `tsconfig.build.json` compiles `src/` with Node types only to enforce this.
 - **MAY** use Bun for development tooling (`bun test`, `bun run`).
 
+### Runtimes and package runners
+
+- **MUST** keep the published CLI working on Node.js 18.18, 20, 22 and 24 and on Bun, through npx,
+  bunx, pnpm dlx and yarn dlx. `bun run compat` checks all of them against the packed tarball; CI
+  runs it on Linux, macOS and Windows.
+- **MUST** keep generated projects runnable with every package manager the user can pick, and on
+  Node.js; only stacks that need Bun (the Elysia backend) may use Bun-only APIs.
+- **MUST NOT** let a network failure stop generation: the update check and version lookups fall back
+  to the installed CLI and the tested ranges.
+
+### Dependency versions
+
+- **MUST** declare template dependencies as `^x.y.z` or `~x.y.z` ranges (exact versions only via
+  `"pinned"` with a reason in the layer's README content). New projects get the newest release inside
+  each range at generation time.
+- Moving to a new major version is a template change: run `bun run deps:outdated` (also weekly in CI),
+  test the new major in a generated project, then raise the range.
+
 ### Options and compatibility
 
 - **MUST** register every selectable technology in `src/core/registry.ts` and its id in `src/types/config.ts`.
@@ -29,6 +47,11 @@ Generated applications are composed from template layers under `templates/`.
   `selectLayers()` in `src/core/generator/plan.ts` defines which layer ids a stack uses and where they go.
 - **MUST** declare dependencies, scripts and env variables in `layer.json`, never as `package.json`
   or `.env.example` files. The engine composes those files and rejects conflicting versions.
+- **MUST** describe a layer for the README through `"readme"` in `layer.json` (features,
+  prerequisites, setup steps, script descriptions, structure, sections). The root `README.md` is
+  composed by `src/core/generator/readme.ts`; layers must not ship it. Describe every script a layer adds.
+- Template development: `--allow-planned` and `MEDHA_STARTER_TEMPLATES_DIR=<path>` generate unfinished
+  options for testing. Never document them for end users or use them to mark an option available.
 - **MUST** list a file in `"overrides"` when a layer intentionally replaces an earlier layer's file.
 - Only files ending in `.tmpl` are rendered (`{{ variable }}`); unknown variables fail generation.
 - Store `.gitignore` and `.npmrc` as `gitignore` and `npmrc` (npm strips the dotted names when publishing).

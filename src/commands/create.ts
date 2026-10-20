@@ -1,8 +1,13 @@
 import { basename, join, relative, resolve } from "node:path";
 import pc from "picocolors";
-import { formatIssues, validateStack } from "../core/compatibility.js";
+import {
+  findAvailabilityIssues,
+  findCompatibilityIssues,
+  formatIssues,
+} from "../core/compatibility.js";
 import { completeStack, parseStackFlags } from "../core/config.js";
 import { CancelledError, CliUsageError, ConfigError } from "../core/errors.js";
+import { readExistingProjectInfo } from "../core/generator/existing-project.js";
 import { createGenerationPlan } from "../core/generator/plan.js";
 import { formatExistingFileActions, planWrites, writeProject } from "../core/generator/write.js";
 import { getPackageVersion, TEMPLATES_ROOT } from "../paths.js";
@@ -18,6 +23,7 @@ import {
 } from "../utils/package-manager.js";
 import { pathExists } from "../utils/fs.js";
 import { runCommand } from "../utils/process.js";
+import { createRegistryClient, type RegistryClient } from "../utils/registry.js";
 import { toValidPackageName, validateProjectName } from "../utils/project-name.js";
 
 export type CreateCommandContext = {
@@ -26,13 +32,17 @@ export type CreateCommandContext = {
   readonly templatesRoot: string;
   readonly detectedPackageManager: PackageManager;
   readonly log: (message: string) => void;
+  /** Registry used for newest-version lookups (defaults to the configured npm registry). */
+  readonly registry?: RegistryClient;
 };
 
 export function defaultCreateContext(options: CreateCliOptions): CreateCommandContext {
   return {
     interactive: !options.yes && process.stdin.isTTY === true && process.stdout.isTTY === true,
     cwd: process.cwd(),
-    templatesRoot: TEMPLATES_ROOT,
+    templatesRoot: process.env.MEDHA_STARTER_TEMPLATES_DIR
+      ? resolve(process.env.MEDHA_STARTER_TEMPLATES_DIR)
+      : TEMPLATES_ROOT,
     detectedPackageManager: detectPackageManager(),
     log: (message) => console.log(message),
   };
@@ -57,21 +67,31 @@ export async function runCreateCommand(
   projectName = validateProjectName(projectName);
 
   const stack: StackConfig = context.interactive
-    ? await promptForStack(givenStack, context.detectedPackageManager)
+    ? await promptForStack(givenStack, context.detectedPackageManager, options.allowPlanned)
     : completeStack(givenStack, context.detectedPackageManager);
 
-  const issues = validateStack(stack);
+  const planned = findAvailabilityIssues(stack);
+  const issues = [...(options.allowPlanned ? [] : planned), ...findCompatibilityIssues(stack)];
+  if (options.allowPlanned && planned.length > 0) {
+    log(
+      pc.yellow(
+        `Warning: --allow-planned is generating options that are not finished:\n${planned.map((issue) => `  - ${issue.message}`).join("\n")}`,
+      ),
+    );
+  }
   if (issues.length > 0) {
     throw new ConfigError(`This configuration cannot be generated:\n${formatIssues(issues)}`);
   }
 
   const targetDirectory = resolve(context.cwd, projectName);
+  const existing = await readExistingProjectInfo(targetDirectory);
   const project: ProjectConfig = {
     projectName,
     targetDirectory,
-    packageName: toValidPackageName(
-      projectName === "." ? basename(targetDirectory) : basename(projectName),
-    ),
+    packageName:
+      existing.name ??
+      toValidPackageName(projectName === "." ? basename(targetDirectory) : basename(projectName)),
+    description: existing.description,
     stack,
     install: options.install && !options.dryRun,
     git: options.git && !options.dryRun,
@@ -80,6 +100,7 @@ export async function runCreateCommand(
   const plan = await createGenerationPlan(project, {
     templatesRoot: context.templatesRoot,
     generatorVersion: getPackageVersion(),
+    ...(options.offline ? {} : { registry: context.registry ?? createRegistryClient() }),
   });
   const actions = await planWrites(plan);
   const existingFileLines = formatExistingFileActions(actions);
@@ -88,6 +109,7 @@ export async function runCreateCommand(
   if (existingFileLines.length > 0) {
     log(`${existingFileLines.join("\n")}\n`);
   }
+  log(`${formatVersionReport(plan, options.dryRun)}\n`);
 
   if (options.dryRun) {
     log(formatPlan(plan));
@@ -99,7 +121,12 @@ export async function runCreateCommand(
     throw new CancelledError();
   }
 
-  log(pc.cyan(`Writing ${actions.filter((action) => action.changed).length} files...`));
+  const changedCount = actions.filter((action) => action.changed).length;
+  log(
+    changedCount === 0
+      ? pc.cyan("Everything is already up to date; no files need to change.")
+      : pc.cyan(`Writing ${changedCount} file${changedCount === 1 ? "" : "s"}...`),
+  );
   const report = await writeProject(plan, actions);
   if (report.backupDirectory) {
     log(pc.dim(`Originals of changed files: ${relative(targetDirectory, report.backupDirectory)}`));
@@ -116,6 +143,30 @@ export async function runCreateCommand(
 
   log(formatNextSteps(project, context.cwd));
   return plan;
+}
+
+export function formatVersionReport(plan: GenerationPlan, detailed: boolean): string {
+  const report = plan.versions;
+  if (!report) {
+    return pc.dim("Dependencies: using the versions the templates were tested with (--offline).");
+  }
+
+  const lines = [
+    `Dependencies: newest compatible releases from the npm registry${report.updates.length > 0 ? ` (${report.updates.length} newer than the templates)` : ""}.`,
+  ];
+  if (detailed) {
+    for (const update of report.updates) {
+      lines.push(pc.dim(`  ${update.file}  ${update.name} ${update.from} → ${update.to}`));
+    }
+  }
+  if (report.unresolved.length > 0) {
+    lines.push(
+      pc.yellow(
+        `Could not look up ${report.unresolved.join(", ")}; ${report.unresolved.length === 1 ? "it uses" : "they use"} the tested version range.`,
+      ),
+    );
+  }
+  return lines.join("\n");
 }
 
 export function formatPlan(plan: GenerationPlan): string {

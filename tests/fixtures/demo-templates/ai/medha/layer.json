@@ -1,0 +1,23 @@
+{
+  "id": "ai/medha",
+  "description": "Demo fixture for ai/medha",
+  "packageJson": {
+    "scripts": {
+      "check:style": "node scripts/check-style.mjs"
+    }
+  },
+  "readme": {
+    "scripts": {
+      "check:style": "Fails on hard-coded colours, other UI kits or a logo used outside `<MedhaLogo />`"
+    },
+    "structure": {
+      "MEDHA_STYLE.md": "The Medha style guide every contributor and AI assistant follows"
+    },
+    "sections": [
+      {
+        "title": "Working with AI assistants",
+        "body": "`MEDHA_STYLE.md` is the single source of truth for how code in this project should look. Claude Code, Codex, Cursor, GitHub Copilot, Gemini and Windsurf all read it through their own instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `.cursor/rules/`, `.windsurf/rules/`).\n\nThe same rules are enforced by `{{ runScript }} check:style` in the pre-commit hook and CI, so off-style code is caught whichever tool wrote it."
+      }
+    ]
+  }
+}

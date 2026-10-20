@@ -85,12 +85,12 @@ describe("createGenerationPlan", () => {
           packageJson: {
             type: "module",
             scripts: { dev: "next dev" },
-            dependencies: { next: "16.4.2" },
+            dependencies: { next: "^16.4.2" },
           },
           env: [{ key: "NEXT_PUBLIC_APP_NAME", example: "{{x}}", description: "Display name" }],
         },
         files: {
-          "README.md.tmpl": "# {{ projectTitle }} on {{packageManager}}",
+          "docs/guide.md.tmpl": "# {{ projectTitle }} on {{packageManager}}",
           gitignore: "node_modules\n",
         },
       },
@@ -110,12 +110,14 @@ describe("createGenerationPlan", () => {
 
     const paths = plan.files.map((file) => file.path);
     expect(paths).toEqual([...paths].sort());
+    expect(paths).toContain("docs/guide.md");
     expect(paths).toContain("README.md");
     expect(paths).toContain(".gitignore");
     expect(paths).not.toContain("gitignore");
 
     const byPath = (path: string) => plan.files.find((file) => file.path === path);
-    expect(byPath("README.md")?.content).toBe("# Demo App on npm");
+    expect(byPath("docs/guide.md")?.content).toBe("# Demo App on npm");
+    expect(byPath("README.md")?.content).toContain("# Demo App");
     expect(byPath(".gitignore")?.content).toBeNull();
 
     expect(JSON.parse(byPath("package.json")?.content ?? "")).toEqual({
@@ -124,7 +126,7 @@ describe("createGenerationPlan", () => {
       private: true,
       type: "module",
       scripts: { dev: "next dev" },
-      dependencies: { "drizzle-orm": "^0.45.4", next: "16.4.2" },
+      dependencies: { "drizzle-orm": "^0.45.4", next: "^16.4.2" },
     });
 
     const env = byPath(".env.example")?.content ?? "";
@@ -134,6 +136,7 @@ describe("createGenerationPlan", () => {
     expect(JSON.parse(byPath("medha.json")?.content ?? "")).toEqual({
       generator: "medha-starter",
       version: "9.9.9",
+      project: { name: "demo-app", description: null },
       stack,
     });
   });
@@ -187,7 +190,9 @@ describe("createGenerationPlan", () => {
   test("rejects layers that ship package.json or .env.example as files", async () => {
     await expect(
       planFor(makeStack(), { "frontend/next": { files: { "package.json": "{}" } } }),
-    ).rejects.toThrow("declare package.json fields and env variables in layer.json");
+    ).rejects.toThrow(
+      "declare package.json fields, env variables and README content in layer.json",
+    );
   });
 
   test("rejects conflicting dependency versions across layers", async () => {
@@ -208,6 +213,35 @@ describe("createGenerationPlan", () => {
     await expect(
       planFor(makeStack(), { "frontend/next": { files: { "a.ts.tmpl": "{{ secretSauce }}" } } }),
     ).rejects.toThrow("Unknown template variable(s) in frontend/next/files/a.ts.tmpl: secretSauce");
+  });
+
+  test("requires ^ or ~ ranges unless a dependency is listed as pinned", async () => {
+    await expect(
+      planFor(makeStack(), {
+        "frontend/next": { manifest: { packageJson: { dependencies: { next: "16.4.2" } } } },
+      }),
+    ).rejects.toThrow('dependencies.next is "16.4.2". Use a "^x.y.z" or "~x.y.z" range');
+    await expect(
+      planFor(makeStack(), {
+        "frontend/next": { manifest: { packageJson: { devDependencies: { x: "latest" } } } },
+      }),
+    ).rejects.toThrow('devDependencies.x is "latest"');
+
+    const plan = await planFor(makeStack(), {
+      "frontend/next": {
+        manifest: {
+          pinned: ["@biomejs/biome"],
+          packageJson: { devDependencies: { "@biomejs/biome": "2.5.15" } },
+        },
+      },
+    });
+    expect(plan.files.find((file) => file.path === "package.json")?.content).toContain(
+      '"@biomejs/biome": "2.5.15"',
+    );
+
+    await expect(
+      planFor(makeStack(), { "frontend/next": { manifest: { pinned: ["ghost"] } } }),
+    ).rejects.toThrow('"pinned" lists ghost, which is not a dependency of this layer');
   });
 
   test("reports a missing layer by id and path", async () => {

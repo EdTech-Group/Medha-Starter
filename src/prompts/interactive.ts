@@ -32,6 +32,7 @@ export async function promptProjectName(): Promise<string> {
 export async function promptForStack(
   given: PartialStackConfig,
   detectedPackageManager: PackageManager,
+  allowPlanned = false,
 ): Promise<StackConfig> {
   const answers: PartialStackConfig = { ...given };
 
@@ -40,7 +41,9 @@ export async function promptForStack(
 
     // Defaults derived from the answers so far (e.g. the ORM follows the database).
     const defaults = completeStack(answers, detectedPackageManager);
-    const options = visibleOptions(key, answers);
+    const options = visibleOptions(key, answers).map((option) =>
+      allowPlanned ? { ...option, status: "available" as const } : option,
+    );
 
     // Nothing selectable yet: keep the default and let validation explain what is missing.
     if (!options.some((option) => option.status === "available")) continue;

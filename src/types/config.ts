@@ -43,6 +43,8 @@ export type ProjectConfig = {
   readonly targetDirectory: string;
   /** Valid npm package name derived from the project name. */
   readonly packageName: string;
+  /** One-line description of what the project is about, when the target already states one. */
+  readonly description: string | null;
   readonly stack: StackConfig;
   readonly install: boolean;
   readonly git: boolean;

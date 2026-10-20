@@ -15,6 +15,19 @@ const envVariableSchema = z.object({
 
 const stringMap = z.record(z.string(), z.string());
 
+const readmeImageSchema = z.object({ src: z.string().min(1), alt: z.string().min(1) });
+
+const readmeSchema = z.strictObject({
+  logo: readmeImageSchema.optional(),
+  images: z.array(readmeImageSchema).optional(),
+  features: z.array(z.string().min(1)).optional(),
+  prerequisites: z.array(z.string().min(1)).optional(),
+  setup: z.array(z.string().min(1)).optional(),
+  scripts: stringMap.optional(),
+  structure: stringMap.optional(),
+  sections: z.array(z.object({ title: z.string().min(1), body: z.string().min(1) })).optional(),
+});
+
 const layerManifestSchema = z.object({
   id: z.string().min(1),
   description: z.string().min(1),
@@ -26,6 +39,8 @@ const layerManifestSchema = z.object({
     })
     .optional(),
   env: z.array(envVariableSchema).optional(),
+  readme: readmeSchema.optional(),
+  pinned: z.array(z.string().min(1)).optional(),
   overrides: z.array(z.string().min(1)).optional(),
 });
 
@@ -60,8 +75,43 @@ export async function resolveLayer(
   if (result.data.id !== selection.id) {
     throw new Error(`${manifestPath} declares id "${result.data.id}", expected "${selection.id}".`);
   }
+  assertDependencyRanges(result.data as LayerManifest, manifestPath);
 
   return { ...selection, manifest: result.data as LayerManifest, directory };
+}
+
+const COMPATIBLE_RANGE = /^[\^~]\d+\.\d+\.\d+$/;
+const EXACT_VERSION = /^\d+\.\d+\.\d+$/;
+
+/**
+ * Dependencies use "^"/"~" ranges so every new project installs the newest compatible release.
+ * Exact versions are allowed only for packages listed in "pinned".
+ */
+function assertDependencyRanges(manifest: LayerManifest, manifestPath: string): void {
+  const pinned = new Set(manifest.pinned ?? []);
+  const sections = {
+    dependencies: manifest.packageJson?.dependencies,
+    devDependencies: manifest.packageJson?.devDependencies,
+  };
+
+  for (const [section, entries] of Object.entries(sections)) {
+    for (const [name, version] of Object.entries(entries ?? {})) {
+      if (version.startsWith("workspace:")) continue;
+      if (pinned.has(name) ? EXACT_VERSION.test(version) : COMPATIBLE_RANGE.test(version)) continue;
+      throw new Error(
+        pinned.has(name)
+          ? `${manifestPath}: ${section}.${name} is listed in "pinned" but "${version}" is not an exact version.`
+          : `${manifestPath}: ${section}.${name} is "${version}". Use a "^x.y.z" or "~x.y.z" range so new projects get the newest compatible release, or list it in "pinned".`,
+      );
+    }
+  }
+  for (const name of pinned) {
+    if (!(name in (sections.dependencies ?? {})) && !(name in (sections.devDependencies ?? {}))) {
+      throw new Error(
+        `${manifestPath}: "pinned" lists ${name}, which is not a dependency of this layer.`,
+      );
+    }
+  }
 }
 
 /** Lists the files a layer contributes, sorted for deterministic output. */

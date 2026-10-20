@@ -28,6 +28,7 @@ export function makeProject(targetDirectory: string, stack: StackConfig): Projec
     projectName: "demo-app",
     targetDirectory,
     packageName: "demo-app",
+    description: null,
     stack,
     install: false,
     git: false,

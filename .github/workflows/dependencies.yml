@@ -1,0 +1,19 @@
+name: Template dependencies
+
+# New projects already get the newest release within each template range. This weekly job lists
+# releases outside those ranges (new majors) so maintainers can test them and raise the ranges.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  outdated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.2"
+      - run: bun install --frozen-lockfile
+      - run: bun run deps:outdated

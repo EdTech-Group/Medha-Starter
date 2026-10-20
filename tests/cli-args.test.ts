@@ -13,7 +13,17 @@ describe("parseCliArgs", () => {
   test("defaults: install and git on, prompting allowed", () => {
     expect(parseCliArgs([])).toEqual({
       kind: "create",
-      options: { stack: {}, yes: false, install: true, git: true, dryRun: false, debug: false },
+      options: {
+        stack: {},
+        yes: false,
+        install: true,
+        git: true,
+        dryRun: false,
+        debug: false,
+        allowPlanned: false,
+        updateCheck: true,
+        offline: false,
+      },
     });
   });
 
@@ -47,6 +57,12 @@ describe("parseCliArgs", () => {
       parseCliArgs(["app", "-y", "--dry-run", "--no-install", "--no-git", "--debug"]),
     ).toMatchObject({
       options: { yes: true, dryRun: true, install: false, git: false, debug: true },
+    });
+  });
+
+  test("reads network flags", () => {
+    expect(parseCliArgs(["app", "--offline", "--no-update-check"])).toMatchObject({
+      options: { offline: true, updateCheck: false },
     });
   });
 

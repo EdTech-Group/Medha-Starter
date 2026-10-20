@@ -31,11 +31,12 @@ async function plan(): Promise<GenerationPlan> {
   const stack = makeStack({ testing: "none" });
   await writeFixtureTemplates(templates, stack, {
     "frontend/next": {
-      manifest: { packageJson: { scripts: { dev: "next dev" }, dependencies: { next: "16.4.2" } } },
+      manifest: {
+        packageJson: { scripts: { dev: "next dev" }, dependencies: { next: "^16.4.2" } },
+      },
       files: {
         "src/app/page.tsx": "export default 1;\n",
         "scripts/run.sh": "#!/bin/sh\n",
-        "README.md": "# Generated readme\n",
         gitignore: "node_modules\n.next\n",
         "tsconfig.json": '{ "generated": true }\n',
         LICENSE: "MIT generated\n",
@@ -94,7 +95,7 @@ describe("writeProject into a new directory", () => {
 
 describe("writeProject into an existing project", () => {
   const existing = {
-    "README.md": "# My repo\n\nTeam notes.\n",
+    "README.md": "# My repo\n\nTeam notes.\n\n## Deploying\n\nAsk ops for access first.\n",
     ".gitignore": "node_modules\n.env\n",
     "package.json": JSON.stringify({
       name: "my-repo",
@@ -112,15 +113,16 @@ describe("writeProject into an existing project", () => {
     const report = await writeProject(await plan());
     const byPath = new Map(report.actions.map((action) => [action.path, action]));
 
-    expect(await read("README.md")).toContain("# My repo\n\nTeam notes.\n");
-    expect(await read("README.md")).toContain("<!-- medha-starter:begin -->\n# Generated readme\n");
+    expect(await read("README.md")).toContain(existing["README.md"]);
+    expect(await read("README.md")).toContain("medha-starter:begin");
+    expect(await read("README.md")).toContain("\n## Demo App\n");
     expect(await read(".gitignore")).toBe(
       "node_modules\n.env\n\n# Added by medha-starter\n.next\n",
     );
     expect(JSON.parse(await read("package.json"))).toMatchObject({
       name: "my-repo",
       version: "3.0.0",
-      dependencies: { lodash: "^4", next: "16.4.2" },
+      dependencies: { lodash: "^4", next: "^16.4.2" },
       scripts: { dev: "next dev" },
     });
     expect(await read("tsconfig.json")).toBe('{ "generated": true }\n');
@@ -141,6 +143,17 @@ describe("writeProject into an existing project", () => {
     }
     expect(await pathExists(join(backup, "LICENSE"))).toBe(false);
     expect(await readFile(join(target, ".medha-starter", ".gitignore"), "utf8")).toBe("*\n");
+  });
+
+  test("replaces a placeholder README with the generated one, keeping the original as a backup", async () => {
+    await seed({ "README.md": "# demo-app\nCreated on GitHub\n" });
+    const report = await writeProject(await plan());
+    const readme = await read("README.md");
+    expect(readme).toContain("# Demo App\n\nA full-stack TypeScript application");
+    expect(readme).not.toContain("Created on GitHub");
+    expect(await readFile(join(report.backupDirectory ?? "", "README.md"), "utf8")).toBe(
+      "# demo-app\nCreated on GitHub\n",
+    );
   });
 
   test("running again changes nothing and makes no new backup", async () => {

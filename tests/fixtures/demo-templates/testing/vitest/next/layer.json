@@ -1,0 +1,17 @@
+{
+  "id": "testing/vitest/next",
+  "description": "Demo fixture for testing/vitest/next",
+  "packageJson": {
+    "scripts": {
+      "test": "vitest run"
+    },
+    "devDependencies": {
+      "vitest": "^3.2.4"
+    }
+  },
+  "readme": {
+    "scripts": {
+      "test": "Runs unit and API tests"
+    }
+  }
+}

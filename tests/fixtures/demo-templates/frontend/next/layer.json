@@ -1,0 +1,35 @@
+{
+  "id": "frontend/next",
+  "description": "Demo fixture for frontend/next",
+  "packageJson": {
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+      "next": "^16.4.2",
+      "react": "^19.3.1",
+      "react-dom": "^19.3.1"
+    },
+    "devDependencies": {
+      "typescript": "^5.9.3"
+    }
+  },
+  "readme": {
+    "features": [
+      "Next.js App Router with server and client components, loading, error and empty states"
+    ],
+    "prerequisites": ["Node.js 20.9 or newer"],
+    "scripts": {
+      "dev": "Starts the development server on http://localhost:3000",
+      "build": "Builds the production bundle",
+      "start": "Serves the production build",
+      "typecheck": "Checks types without emitting files"
+    },
+    "structure": {
+      "src/app": "Routes, layouts and pages (App Router)"
+    }
+  }
+}

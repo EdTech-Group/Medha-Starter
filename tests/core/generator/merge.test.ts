@@ -3,8 +3,11 @@ import {
   appendLines,
   appendMarkdown,
   chooseStrategy,
+  demoteHeadings,
+  isPlaceholderMarkdown,
   mergeEnv,
   mergePackageJsonFile,
+  wrapGeneratedSection,
 } from "../../../src/core/generator/merge.js";
 
 describe("chooseStrategy", () => {
@@ -65,26 +68,73 @@ describe("mergeEnv", () => {
 });
 
 describe("appendMarkdown", () => {
-  test("appends the generated document inside markers", () => {
-    const result = appendMarkdown("# My repo\n\nNotes.", "# Generated\n\nRun it.\n");
+  const BEGIN =
+    "<!-- medha-starter:begin (regenerated on each run; add your own notes outside this block) -->";
+  const END = "<!-- medha-starter:end -->";
+  const realReadme =
+    "# Team project\n\nWe track sensor data.\n\n## Contributing\n\nOpen a PR against main.\n";
+  const generated = wrapGeneratedSection(
+    "# Demo App\n\nIntro.\n\n## Scripts\n\n```sh\n# not a heading\n```\n",
+  );
+
+  test("replaces a placeholder README such as the one GitHub creates", () => {
+    const result = appendMarkdown("# demo-app\nMy new repo\n", generated);
+    expect(result.content).toBe(generated);
+    expect(result.notes).toEqual(["placeholder replaced with the generated document"]);
+    expect(appendMarkdown("", generated).content).toBe(generated);
+  });
+
+  test("appends after real content, demoting headings outside code blocks", () => {
+    const result = appendMarkdown(realReadme, generated);
     expect(result.content).toBe(
-      "# My repo\n\nNotes.\n\n<!-- medha-starter:begin -->\n# Generated\n\nRun it.\n<!-- medha-starter:end -->\n",
+      `${realReadme}\n${BEGIN}\n## Demo App\n\nIntro.\n\n### Scripts\n\n\`\`\`sh\n# not a heading\n\`\`\`\n${END}\n`,
     );
+    expect(result.notes).toEqual(["generated section appended at the end"]);
   });
 
-  test("re-running replaces the marked section instead of appending again", () => {
-    const first = appendMarkdown("# My repo\n", "Version 1").content ?? "";
-    const second = appendMarkdown(`${first}\nAfter.\n`, "Version 2").content ?? "";
-    expect(second).toContain("Version 2");
-    expect(second).not.toContain("Version 1");
+  test("does not demote when the existing file has no top-level heading", () => {
+    const result = appendMarkdown(
+      "Some notes without headings, long enough to count as real content.\nLine two.\nLine three.\nLine four.\n",
+      generated,
+    );
+    expect(result.content).toContain(`${BEGIN}\n# Demo App`);
+  });
+
+  test("re-running is a no-op, and a newer generated document replaces only its own section", () => {
+    const first = appendMarkdown(realReadme, generated).content ?? "";
+    expect(appendMarkdown(first, generated).content).toBeNull();
+
+    const edited = `${first}\nNotes added later.\n`;
+    const second =
+      appendMarkdown(edited, wrapGeneratedSection("# Demo App\n\nVersion 2.")).content ?? "";
+    expect(second).toContain("## Demo App\n\nVersion 2.");
+    expect(second).not.toContain("Intro.");
     expect(second.match(/medha-starter:begin/g)).toHaveLength(1);
-    expect(second.endsWith("After.\n")).toBe(true);
+    expect(second.startsWith(realReadme)).toBe(true);
+    expect(second.endsWith("Notes added later.\n")).toBe(true);
   });
 
-  test("leaves a file alone when it already contains the generated document", () => {
-    expect(appendMarkdown("# Generated\n\nRun it.\n", "# Generated\n\nRun it.").content).toBeNull();
+  test("a README created by an earlier run is updated in place, not appended to", () => {
+    const newer = wrapGeneratedSection("# Demo App\n\nNewer version with more text.");
+    expect(appendMarkdown(generated, newer).content).toBe(newer);
+    expect(appendMarkdown(generated, generated).content).toBeNull();
   });
 });
+
+describe("isPlaceholderMarkdown and demoteHeadings", () => {
+  test("detects placeholder files", () => {
+    expect(isPlaceholderMarkdown("")).toBe(true);
+    expect(isPlaceholderMarkdown("# repo\n\nShort description.\n")).toBe(true);
+    expect(isPlaceholderMarkdown(realReadmeForPlaceholder)).toBe(false);
+    expect(isPlaceholderMarkdown("# repo\n```sh\nrun\n```")).toBe(false);
+  });
+
+  test("stops demoting at level 6", () => {
+    expect(demoteHeadings("###### Deep\n##### Five")).toBe("###### Deep\n###### Five");
+  });
+});
+
+const realReadmeForPlaceholder = "# Repo\n\nLine one.\n\nLine two.\n\nLine three.\n";
 
 describe("mergePackageJsonFile", () => {
   const generated = JSON.stringify({
@@ -117,10 +167,8 @@ describe("mergePackageJsonFile", () => {
     });
     expect(result.notes).toEqual([
       "type added",
-      "scripts.dev vite → next dev",
-      "scripts.build added",
-      "dependencies.next 15.0.0 → 16.4.2",
-      "dependencies.react added",
+      "scripts: 1 added, dev vite → next dev",
+      "dependencies: 1 added, next 15.0.0 → 16.4.2",
     ]);
   });
 

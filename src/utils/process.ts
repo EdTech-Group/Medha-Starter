@@ -59,6 +59,33 @@ export function runCommand(
   });
 }
 
+/**
+ * Runs a command attached to this terminal (stdin included, so its prompts work) and resolves
+ * with its exit code. Rejects only when the command cannot be started.
+ */
+export function runAttached(
+  command: string,
+  args: readonly string[],
+  env: NodeJS.ProcessEnv,
+): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, [...args], {
+      env,
+      stdio: "inherit",
+      shell: process.platform === "win32",
+    });
+    activeProcesses.add(child);
+    child.once("error", (error) => {
+      activeProcesses.delete(child);
+      reject(new Error(`Failed to run "${command}": ${error.message}`));
+    });
+    child.once("close", (code, signal) => {
+      activeProcesses.delete(child);
+      resolve(code ?? (signal ? 130 : 1));
+    });
+  });
+}
+
 /** Kills child processes still running (called on Ctrl+C). */
 export function killActiveProcesses(): void {
   for (const child of activeProcesses) {

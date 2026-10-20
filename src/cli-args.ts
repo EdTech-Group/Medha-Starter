@@ -24,9 +24,15 @@ General options:
   --dry-run              Show the generation plan without writing files
   --no-install           Skip dependency installation
   --no-git               Skip "git init" in the new project
+  --offline              Do not contact the npm registry; use the versions the templates were tested with
+  --no-update-check      Do not check for a newer medha-starter before running
   --debug                Show stack traces on errors
   -h, --help             Show help
   -V, --version          Show version
+
+Maintainer options (for developing templates; output may not work):
+  --allow-planned        Allow options that are still marked "planned"
+  MEDHA_STARTER_TEMPLATES_DIR=<path>  Read template layers from another directory
 
 Examples:
   npx medha-starter create my-app
@@ -34,6 +40,8 @@ Examples:
   npx medha-starter my-app --backend nestjs --db mysql --pm pnpm
   npx medha-starter my-app --backend elysia --db postgres --pm bun --dry-run
   npx medha-starter list
+  bunx medha-starter my-app          # Bun (add --bun to run on the Bun runtime)
+  pnpm dlx medha-starter my-app      # pnpm; yarn dlx works the same way
 `;
 
 export function getCliHelpText(version: string): string {
@@ -81,6 +89,9 @@ function parseCreateArgs(args: readonly string[]): ParsedCliCommand {
   let git = true;
   let dryRun = false;
   let debug = false;
+  let allowPlanned = false;
+  let updateCheck = true;
+  let offline = false;
 
   const setStackValue = (key: StackKey, flag: string, value: string): void => {
     const existing = stack[key];
@@ -116,6 +127,15 @@ function parseCreateArgs(args: readonly string[]): ParsedCliCommand {
         continue;
       case "--debug":
         debug = true;
+        continue;
+      case "--allow-planned":
+        allowPlanned = true;
+        continue;
+      case "--no-update-check":
+        updateCheck = false;
+        continue;
+      case "--offline":
+        offline = true;
         continue;
     }
 
@@ -160,6 +180,9 @@ function parseCreateArgs(args: readonly string[]): ParsedCliCommand {
     git,
     dryRun,
     debug,
+    allowPlanned,
+    updateCheck,
+    offline,
   };
 
   return { kind: "create", options };

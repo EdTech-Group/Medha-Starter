@@ -1,5 +1,19 @@
 import type { ProjectConfig } from "./config.js";
 
+export type DependencyUpdate = {
+  /** Project-relative package.json path. */
+  readonly file: string;
+  readonly name: string;
+  readonly from: string;
+  readonly to: string;
+};
+
+export type VersionResolutionReport = {
+  readonly updates: readonly DependencyUpdate[];
+  /** Packages whose newest version could not be looked up; they keep the template's range. */
+  readonly unresolved: readonly string[];
+};
+
 export type EnvVariable = {
   readonly key: string;
   /** Safe example value written to .env.example. Never a real credential. */
@@ -14,12 +28,44 @@ export type PackageJsonFragment = {
   readonly [field: string]: unknown;
 };
 
+export type ReadmeImage = {
+  /** Path inside the generated project (relative to the layer's destination) or an https URL. */
+  readonly src: string;
+  readonly alt: string;
+};
+
+/**
+ * What a layer contributes to the generated README.md. Every string may use template
+ * variables ({{ runScript }}, {{ projectTitle }}, ...).
+ */
+export type LayerReadme = {
+  /** Shown centred at the top of the README (one layer, usually the UI theme). */
+  readonly logo?: ReadmeImage;
+  /** Screenshots shown under the introduction. */
+  readonly images?: readonly ReadmeImage[];
+  readonly features?: readonly string[];
+  readonly prerequisites?: readonly string[];
+  /** Setup steps, in order, between "install" and "start the dev server". Markdown allowed. */
+  readonly setup?: readonly string[];
+  /** Script name → what it does, for scripts this layer adds to package.json. */
+  readonly scripts?: Readonly<Record<string, string>>;
+  /** Path (relative to the layer's destination) → what it contains. */
+  readonly structure?: Readonly<Record<string, string>>;
+  readonly sections?: readonly { readonly title: string; readonly body: string }[];
+};
+
 /** Contents of a template layer's layer.json. */
 export type LayerManifest = {
   readonly id: string;
   readonly description: string;
   readonly packageJson?: PackageJsonFragment;
   readonly env?: readonly EnvVariable[];
+  readonly readme?: LayerReadme;
+  /**
+   * Dependencies deliberately pinned to an exact version (e.g. a formatter whose output changes
+   * between patch releases). Every other dependency must use a "^" or "~" range.
+   */
+  readonly pinned?: readonly string[];
   /** Paths (relative to the layer's destination) this layer deliberately replaces. */
   readonly overrides?: readonly string[];
 };
@@ -81,4 +127,6 @@ export type GenerationPlan = {
   readonly project: ProjectConfig;
   readonly layers: readonly ResolvedLayer[];
   readonly files: readonly PlannedFile[];
+  /** Dependency ranges raised to the newest compatible release; null when lookups were skipped. */
+  readonly versions: VersionResolutionReport | null;
 };

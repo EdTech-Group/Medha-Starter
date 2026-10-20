@@ -10,6 +10,10 @@ import type {
 import { formatRunCommand } from "../../utils/package-manager.js";
 import { listLayerFiles, resolveLayer } from "./layers.js";
 import { mergePackageJson, serializePackageJson } from "./package-json.js";
+import { wrapGeneratedSection } from "./merge.js";
+import type { RegistryClient } from "../../utils/registry.js";
+import { renderReadme } from "./readme.js";
+import { resolveNewestVersions } from "./versions.js";
 import { renderTemplate, TEMPLATE_SUFFIX } from "./render.js";
 
 /** npm drops these from published packages, so templates store them without the leading dot. */
@@ -21,6 +25,8 @@ const DOTFILE_RENAMES: Readonly<Record<string, string>> = {
 /** Files the engine composes itself; layers contribute to them through layer.json instead. */
 const GENERATED_FILES = new Set(["package.json", ".env.example"]);
 export const STACK_FILE = "medha.json";
+/** The root README is composed from the stack and each layer's "readme" metadata. */
+export const README_FILE = "README.md";
 
 export function hasSeparateBackend(stack: StackConfig): boolean {
   return stack.backend !== "next";
@@ -80,6 +86,7 @@ export function buildTemplateVariables(
   return {
     projectName: project.packageName,
     projectTitle: toTitle(project.packageName),
+    projectDescription: project.description ?? "",
     packageManager: stack.packageManager,
     runScript: formatRunCommand(stack.packageManager, "").trimEnd(),
     installCommand: stack.packageManager === "yarn" ? "yarn" : `${stack.packageManager} install`,
@@ -95,6 +102,8 @@ export function buildTemplateVariables(
 export type CreatePlanOptions = {
   readonly templatesRoot: string;
   readonly generatorVersion: string;
+  /** When given, dependency ranges are raised to the newest compatible release. */
+  readonly registry?: RegistryClient;
 };
 
 export async function createGenerationPlan(
@@ -120,6 +129,7 @@ export async function createGenerationPlan(
         name: packageNameFor(project.packageName, destination),
         version: "0.1.0",
         private: true,
+        ...(destination === "." && project.description ? { description: project.description } : {}),
       });
     }
     if (manifest.packageJson) {
@@ -139,9 +149,13 @@ export async function createGenerationPlan(
       const outputPath = joinPath(destination, outputName(file.relativePath, isTemplate));
       const fileName = outputPath.split("/").at(-1) ?? outputPath;
 
-      if (GENERATED_FILES.has(fileName) || outputPath === STACK_FILE) {
+      if (
+        GENERATED_FILES.has(fileName) ||
+        outputPath === STACK_FILE ||
+        outputPath === README_FILE
+      ) {
         throw new Error(
-          `Layer "${layer.id}" ships ${file.relativePath}; declare package.json fields and env variables in layer.json instead.`,
+          `Layer "${layer.id}" ships ${file.relativePath}; declare package.json fields, env variables and README content in layer.json instead.`,
         );
       }
 
@@ -182,6 +196,10 @@ export async function createGenerationPlan(
     }
   }
 
+  const versions = options.registry
+    ? await resolveNewestVersions(packageJsons, options.registry)
+    : null;
+
   for (const [destination, packageJson] of packageJsons) {
     addGeneratedFile(
       files,
@@ -198,9 +216,28 @@ export async function createGenerationPlan(
   }
   addGeneratedFile(
     files,
+    README_FILE,
+    wrapGeneratedSection(
+      renderReadme({
+        project,
+        layers,
+        packageJsons,
+        envVariables,
+        variables,
+        generatorVersion: options.generatorVersion,
+      }),
+    ),
+  );
+  addGeneratedFile(
+    files,
     STACK_FILE,
     `${JSON.stringify(
-      { generator: "medha-starter", version: options.generatorVersion, stack: project.stack },
+      {
+        generator: "medha-starter",
+        version: options.generatorVersion,
+        project: { name: project.packageName, description: project.description },
+        stack: project.stack,
+      },
       null,
       2,
     )}\n`,
@@ -209,6 +246,7 @@ export async function createGenerationPlan(
   return {
     project,
     layers,
+    versions,
     // Code-unit order, so output is identical regardless of the machine's locale.
     files: [...files.values()].sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0)),
   };
@@ -277,8 +315,8 @@ function packageNameFor(packageName: string, destination: string): string {
 }
 
 function toTitle(packageName: string): string {
-  return packageName
-    .split("-")
+  return (packageName.split("/").at(-1) ?? packageName)
+    .split(/[-_.]/)
     .filter((part) => part.length > 0)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");

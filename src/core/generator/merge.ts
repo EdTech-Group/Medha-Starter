@@ -1,6 +1,7 @@
 import type { ExistingFileStrategy } from "../../types/generator.js";
 
-const MARKDOWN_BEGIN = "<!-- medha-starter:begin -->";
+const MARKDOWN_BEGIN =
+  "<!-- medha-starter:begin (regenerated on each run; add your own notes outside this block) -->";
 const MARKDOWN_END = "<!-- medha-starter:end -->";
 const ADDED_HEADER = "# Added by medha-starter";
 
@@ -110,28 +111,78 @@ export function mergeEnv(existing: string, generated: string): MergeResult {
 }
 
 /**
- * Appends the generated document inside marker comments. If an earlier run left a marked
- * section, that section is replaced instead, so re-running never duplicates it.
+ * Combines a generated Markdown document with an existing one:
+ * - an empty or placeholder file (a title and at most a line or two, such as the README GitHub
+ *   creates with a new repository) is replaced by the generated document;
+ * - otherwise the generated document is appended inside marker comments, with its headings
+ *   demoted one level when the existing file already has a top-level heading, so the result
+ *   still reads as one document;
+ * - a marked section left by an earlier run is replaced, so re-running never duplicates it.
  */
 export function appendMarkdown(existing: string, generated: string): MergeResult {
-  const body = generated.trim();
-  if (body.length === 0 || existing.includes(body)) return { content: null, notes: [] };
+  const body = unwrapGeneratedSection(generated).trim();
+  if (body.length === 0 || existing.trim() === body) return { content: null, notes: [] };
 
-  const section = `${MARKDOWN_BEGIN}\n${body}\n${MARKDOWN_END}`;
   const begin = existing.indexOf(MARKDOWN_BEGIN);
   const end = existing.indexOf(MARKDOWN_END, begin);
+  const hasSection = begin >= 0 && end > begin;
 
-  if (begin >= 0 && end > begin) {
+  if (!hasSection && isPlaceholderMarkdown(existing)) {
     return {
-      content: `${existing.slice(0, begin)}${section}${existing.slice(end + MARKDOWN_END.length)}`,
-      notes: ["generated section replaced"],
+      content: wrapGeneratedSection(body),
+      notes: ["placeholder replaced with the generated document"],
     };
   }
 
+  const userContent = hasSection
+    ? `${existing.slice(0, begin)}${existing.slice(end + MARKDOWN_END.length)}`
+    : existing;
+  const sectionBody = /^#\s/m.test(stripFencedCode(userContent)) ? demoteHeadings(body) : body;
+  const section = `${MARKDOWN_BEGIN}\n${sectionBody}\n${MARKDOWN_END}`;
+
+  const content = hasSection
+    ? `${existing.slice(0, begin)}${section}${existing.slice(end + MARKDOWN_END.length)}`
+    : `${withTrailingNewline(existing)}\n${section}\n`;
+
+  if (content === existing) return { content: null, notes: [] };
   return {
-    content: `${withTrailingNewline(existing)}\n${section}\n`,
-    notes: ["generated section appended"],
+    content,
+    notes: [hasSection ? "generated section updated" : "generated section appended at the end"],
   };
+}
+
+/** Wraps generated Markdown in markers so later runs can find and replace exactly this part. */
+export function wrapGeneratedSection(markdown: string): string {
+  return `${MARKDOWN_BEGIN}\n${unwrapGeneratedSection(markdown).trim()}\n${MARKDOWN_END}\n`;
+}
+
+function unwrapGeneratedSection(markdown: string): string {
+  const begin = markdown.indexOf(MARKDOWN_BEGIN);
+  const end = markdown.indexOf(MARKDOWN_END, begin);
+  return begin >= 0 && end > begin ? markdown.slice(begin + MARKDOWN_BEGIN.length, end) : markdown;
+}
+
+/** A file with no real content yet: blank, or a heading plus at most a couple of short lines. */
+export function isPlaceholderMarkdown(text: string): boolean {
+  const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
+  return lines.length <= 3 && text.trim().length <= 200 && !text.includes("```");
+}
+
+/** Turns "# A" into "## A" (and so on, up to level 6), leaving fenced code blocks untouched. */
+export function demoteHeadings(markdown: string): string {
+  let inFence = false;
+  return markdown
+    .split("\n")
+    .map((line) => {
+      if (/^\s*(```|~~~)/.test(line)) inFence = !inFence;
+      if (inFence || !/^#{1,5}\s/.test(line)) return line;
+      return `#${line}`;
+    })
+    .join("\n");
+}
+
+function stripFencedCode(markdown: string): string {
+  return markdown.replace(/^\s*(```|~~~)[\s\S]*?^\s*\1.*$/gm, "");
 }
 
 /**
@@ -160,17 +211,19 @@ export function mergePackageJsonFile(
   for (const [field, value] of Object.entries(incoming)) {
     if (DEPENDENCY_SECTIONS.includes(field)) {
       const section = { ...(asStringMap(current[field]) ?? {}) };
+      let added = 0;
+      const updated: string[] = [];
       for (const [name, version] of Object.entries(asStringMap(value) ?? {})) {
         const before = section[name];
         if (before === version) continue;
         section[name] = version;
-        notes.push(
-          before === undefined
-            ? `${field}.${name} added`
-            : `${field}.${name} ${before} → ${version}`,
-        );
+        if (before === undefined) added += 1;
+        else updated.push(`${name} ${before} → ${version}`);
       }
       merged[field] = section;
+      // One note per section: how many were added, and every changed value spelled out.
+      const parts = [...(added > 0 ? [`${added} added`] : []), ...updated];
+      if (parts.length > 0) notes.push(`${field}: ${parts.join(", ")}`);
       continue;
     }
 

@@ -1,0 +1,9 @@
+{
+  "id": "feature/projects/web/next",
+  "description": "Demo fixture for feature/projects/web/next",
+  "readme": {
+    "features": [
+      "Projects screens built with Medha components: table, search, form dialog and toasts"
+    ]
+  }
+}
