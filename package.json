@@ -1,0 +1,55 @@
+{
+  "name": "medha-starter",
+  "version": "0.1.0",
+  "description": "Medha-Starter: generate full-stack TypeScript apps in the Medha visual style, with a choice of frontend, backend, database and tooling.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "medha-starter": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "keywords": [
+    "medha",
+    "starter",
+    "scaffold",
+    "generator",
+    "cli",
+    "nextjs",
+    "nestjs",
+    "elysia",
+    "bootstrap",
+    "postgresql",
+    "mysql",
+    "mongodb"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "bun src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.build.json --noEmit",
+    "lint": "biome lint src tests",
+    "fmt": "biome format --write src tests",
+    "fmt:check": "biome format src tests",
+    "test": "bun test",
+    "check": "bun run fmt:check && bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@types/bun": "^1.4.3",
+    "@types/node": "^18.19.130",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^7.0.2"
+  }
+}
