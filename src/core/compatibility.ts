@@ -1,8 +1,16 @@
-import type { DatabaseId, OrmId, StackConfig, StackKey } from "../types/config.js";
+import type {
+  BackendId,
+  DatabaseId,
+  FrontendId,
+  OrmId,
+  StackConfig,
+  StackKey,
+} from "../types/config.js";
 import type { CompatibilityIssue, CompatibilityRule } from "../types/registry.js";
 import { getOption, STACK_KEYS } from "./registry.js";
 
 const ORMS_BY_DATABASE: Readonly<Record<DatabaseId, readonly OrmId[]>> = {
+  none: ["none"],
   postgres: ["drizzle", "prisma"],
   mysql: ["drizzle", "prisma"],
   mongodb: ["mongoose"],
@@ -18,6 +26,20 @@ export function defaultOrmFor(database: DatabaseId): OrmId {
     throw new Error(`No ORM is registered for database "${database}".`);
   }
   return first;
+}
+
+/**
+ * The backend when none was chosen: none for a frontend-only app, otherwise the one that fits the
+ * frontend (a database needs a server to talk to it).
+ */
+export function defaultBackendFor(frontend: FrontendId, database?: DatabaseId): BackendId {
+  if (database === undefined || database === "none") return "none";
+  return frontend === "next" ? "next" : "nestjs";
+}
+
+/** The database when none was chosen: none without a backend, otherwise PostgreSQL. */
+export function defaultDatabaseFor(backend: BackendId): DatabaseId {
+  return backend === "none" ? "none" : "postgres";
 }
 
 /**
@@ -45,6 +67,36 @@ export const COMPATIBILITY_RULES: readonly CompatibilityRule[] = [
             message:
               "Next.js Route Handlers run inside a Next.js app, so they need the Next.js frontend.",
             fix: "Use --frontend next, or choose --backend nestjs or --backend elysia.",
+          }
+        : null,
+  },
+  {
+    id: "database-needs-backend",
+    summary: "A database needs a backend; a frontend-only app (--backend none) has no database.",
+    check: ({ backend, database }) => {
+      if (backend === "none" && database !== "none") {
+        return {
+          message: `Database "${database}" needs a backend to connect to it.`,
+          fix: "Use --db none for a frontend-only app, or choose a --backend.",
+        };
+      }
+      if (backend !== "none" && database === "none") {
+        return {
+          message: `The "${backend}" backend needs a database.`,
+          fix: "Choose a --db, or use --backend none for a frontend-only app.",
+        };
+      }
+      return null;
+    },
+  },
+  {
+    id: "credentials-need-backend",
+    summary: "Email + password sign-in needs a backend to check passwords.",
+    check: ({ backend, auth }) =>
+      auth === "credentials" && backend === "none"
+        ? {
+            message: "Email + password sign-in must be checked on a server.",
+            fix: "Use --auth none, or choose a --backend and --db.",
           }
         : null,
   },

@@ -100,11 +100,15 @@ function introduction(project: ProjectConfig): string {
     stack.backend === "next"
       ? "API routes in the same Next.js app"
       : `a separate ${label("backend", stack.backend)} API in \`apps/api\``;
-  const stackSentence = [
-    `A full-stack TypeScript application with a ${label("frontend", stack.frontend)} frontend, ${backend},`,
-    `and ${label("database", stack.database)} through ${label("orm", stack.orm)}.`,
-    `The interface uses the ${label("ui", stack.ui)} theme.`,
-  ].join(" ");
+  const theme = `The interface uses the ${label("ui", stack.ui)} theme.`;
+  const stackSentence =
+    stack.backend === "none"
+      ? `A TypeScript single-page application built with ${label("frontend", stack.frontend)}. ${theme}`
+      : [
+          `A full-stack TypeScript application with a ${label("frontend", stack.frontend)} frontend, ${backend},`,
+          `and ${label("database", stack.database)} through ${label("orm", stack.orm)}.`,
+          theme,
+        ].join(" ");
 
   // Lead with what the project is about when the folder already said so.
   return project.description

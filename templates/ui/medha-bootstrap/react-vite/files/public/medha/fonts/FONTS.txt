@@ -1,0 +1,40 @@
+Bundled Google Fonts (all SIL Open Font License 1.1, https://openfontlicense.org)
+
+=== Tiro Devanagari Sanskrit ===
+Copyright 2020 The Indigo Project Authors (https://github.com/TiroTypeworks/Indigo)
+
+=== Mukta ===
+Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved.
+
+=== Tiro Devanagari Hindi ===
+Copyright 2020 The Indigo Project Authors (https://github.com/TiroTypeworks/Indigo)
+
+=== Martel ===
+Copyright (c) 2015 Dan Reynolds. Copyright (c) 2010-2015, Sorkin Type Co (www.sorkintype.com) with Reserved Font Name 'Merriweather'
+
+=== Eczar ===
+Copyright 2014 The Eczar Project Authors (https://github.com/rosettatype/eczar)
+
+=== Sahitya ===
+Copyright (c) 2015 by Juan Pablo del Peral (http://www.htfonts.com). All rights reserved.
+
+=== Yantramanav ===
+Copyright 2014, Erin McLaughlin (hello@erinmclaughlin.com). Copyright 2010, Google Inc. All Rights Reserved.
+
+=== Palanquin ===
+Copyright 2014 Pria Ravichandran (pria.ravichandran@gmail.com)
+
+=== Glegoo ===
+Copyright (c) 2011, Eduardo Tunni (http://www.tipo.net.ar), Copyright 2011-13 Lohit Fonts Project contributors (http://fedorahosted.org/lohit)
+
+=== Sarala ===
+Copyright 2015 by Andres Torresi. All rights reserved.
+
+=== Kurale ===
+Copyright 2013 The Kurale Project Authors (edu@tipo.net.ar)
+
+=== Pragati Narrow ===
+Copyright (c) 2012-2015, Omnibus-Type (www.omnibus-type.com|omnibus.type@gmail.com)
+
+=== Inknut Antiqua ===
+Copyright (c) 2014 Claus Eggers Sørensen (es@forthehearts.net)

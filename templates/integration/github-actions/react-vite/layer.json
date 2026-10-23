@@ -1,0 +1,18 @@
+{
+  "id": "integration/github-actions/react-vite",
+  "description": "GitHub Actions workflow running every check on pushes and pull requests.",
+  "readme": {
+    "features": [
+      "GitHub Actions CI: lint, typecheck, Medha style check, tests and build on every push and pull request"
+    ],
+    "structure": {
+      ".github/workflows/ci.yml": "CI workflow"
+    },
+    "sections": [
+      {
+        "title": "Continuous integration",
+        "body": "`.github/workflows/ci.yml` installs exactly what your lockfile lists (`{{ ciInstall }}`), then runs the same checks as you do locally. Commit the lockfile your package manager created, or the install step fails."
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 // Runs the compiled CLI with real Node.js, the way `npx medha-starter` does, to prove the
@@ -39,6 +40,27 @@ describe("compiled CLI on Node.js", () => {
     expect(list.code).toBe(0);
     expect(list.stdout).toContain("PostgreSQL");
     expect(list.stdout).toContain("MongoDB uses Mongoose");
+  });
+
+  test("the packed tarball builds dist and contains every bin target", () => {
+    // 0.1.0 was published without dist/ (it is gitignored), so `npx medha-starter` found no binary.
+    const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
+      bin: Record<string, string>;
+      scripts: Record<string, string>;
+    };
+    expect(pkg.scripts.prepack).toContain("build");
+
+    const pack = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], {
+      cwd: root,
+      encoding: "utf8",
+      shell: process.platform === "win32",
+    });
+    expect(pack.status).toBe(0);
+    const [{ files }] = JSON.parse(pack.stdout) as [{ files: { path: string }[] }];
+    const paths = files.map((file) => file.path);
+    for (const target of Object.values(pkg.bin)) {
+      expect(paths).toContain(target.replace(/^\.\//, ""));
+    }
   });
 
   test("exits 64 with an actionable message for bad input", () => {

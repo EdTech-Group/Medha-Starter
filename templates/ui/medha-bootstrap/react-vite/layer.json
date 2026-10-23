@@ -1,0 +1,48 @@
+{
+  "id": "ui/medha-bootstrap/react-vite",
+  "description": "The Medha theme (Bootstrap 5) ported to React: every page, the shared chrome and the theme scripts.",
+  "packageJson": {
+    "dependencies": {
+      "@popperjs/core": "^2.11.8",
+      "bootstrap": "~5.0.2"
+    }
+  },
+  "overrides": ["index.html", "src/main.tsx", "src/App.tsx", "biome.json"],
+  "readme": {
+    "logo": {
+      "src": "public/medha/medha-logo.svg",
+      "alt": "Medha"
+    },
+    "features": [
+      "Landing website (`/`, `/about`, `/services`, `/gallery`, `/contact`), sign-in (`/login`) and registration (`/register`)",
+      "Dashboard (`/dashboard`) in the Medha workspace layout: sidebar, topbar, light palette and colour-scheme selector",
+      "Every Medha component as its own page under `/dashboard/...`: buttons, grids, typography, icons, cards, navigation, feedback, carousels, inputs, validation, tables, charts, calendar, inbox, compose, FAQ and more",
+      "Component explorer (`/dashboard/components`): every page in tabs by section, with search",
+      "Rich tools from the theme: WYSIWYG editor, tree diagram and tree editor, UML editor, MathML equation editor and Vedic Sanskrit editor",
+      "Reusable typed components for your own screens: `AppShell`, `SiteShell`, `AuthShell`, `PageHeading`, `Panel`, `MetricCard`, `Icon`, `MedhaLogo`"
+    ],
+    "structure": {
+      "src/App.tsx": "All routes; add your own pages here",
+      "src/pages": "Your pages (the component explorer is an example)",
+      "src/components/medha": "Shells and reusable Medha components",
+      "src/medha": "The Medha theme ported to React: pages, shared chrome, theme scripts and styles",
+      "src/medha/CATALOG.md": "Every theme page with its route, component file and scripts",
+      "src/styles/app.css": "Styles for your own screens",
+      "public/medha": "Logo, fonts and the equation-editor embed"
+    },
+    "sections": [
+      {
+        "title": "Design system",
+        "body": "Every screen uses the Medha theme. Build new screens from the shells and components in `src/components/medha/`, and copy markup from the theme pages in `src/medha/pages/` (browse them at `/dashboard/components`); their class names carry the Medha style.\n\nColours come from the `--medha-*` design tokens, so the colour-scheme selector in the topbar can re-colour the whole app. Never hard-code colours or add another UI kit.\n\nA new workspace page:\n\n```tsx\nimport { AppShell, PageHeading, Panel } from \"./components/medha\";\n\nexport function ReportsPage() {\n  return (\n    <AppShell title=\"Reports\">\n      <PageHeading eyebrow=\"WORKSPACE\" title=\"Reports\" description=\"Monthly figures.\" />\n      <Panel title=\"This month\">…</Panel>\n    </AppShell>\n  );\n}\n```\n\nThen add `<Route path=\"/dashboard/reports\" element={<ReportsPage />} />` to `src/App.tsx` and a link to `src/medha/chrome/Sidebar.tsx`."
+      },
+      {
+        "title": "How the theme pages work",
+        "body": "Each HTML page of the Medha theme is a React page component in `src/medha/pages/`. The interactive parts (editors, tree diagrams, the dashboard filters, the colour-scheme designer) are the theme's own scripts in `src/medha/scripts/`. `MedhaPage` runs them after the page renders and removes their listeners, timers and pop-ups when you leave the page, so every page behaves as it did in the static theme.\n\nThe sign-in and registration forms are demos: they validate input and go to the dashboard, but nothing is sent anywhere. Connect them to your own API before using them for real accounts."
+      },
+      {
+        "title": "Credits",
+        "body": "The Medha theme combines page designs from the Esteem, Glance and Instruction templates by W3layouts (licensed under CC BY 3.0, https://creativecommons.org/licenses/by/3.0/) with the Medha palette and logo. Bootstrap is MIT-licensed. The bundled fonts in `public/medha/fonts/` are licensed under the SIL Open Font License 1.1 (see `FONTS.txt` and `OFL-LICENSE.txt` there). Keep this notice when you publish the app."
+      }
+    ]
+  }
+}

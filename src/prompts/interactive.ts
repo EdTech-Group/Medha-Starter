@@ -46,7 +46,14 @@ export async function promptForStack(
     );
 
     // Nothing selectable yet: keep the default and let validation explain what is missing.
-    if (!options.some((option) => option.status === "available")) continue;
+    const selectable = options.filter((option) => option.status === "available");
+    if (selectable.length === 0) continue;
+    // Only one possible answer (e.g. no database for a frontend-only app): take it, don't ask.
+    const [only] = selectable;
+    if (selectable.length === 1 && only && !STACK_REGISTRY[key].multiple) {
+      Object.assign(answers, { [key]: only.id });
+      continue;
+    }
 
     const value = await promptForKey(key, options, defaults[key]);
     Object.assign(answers, { [key]: value });
@@ -73,6 +80,13 @@ function visibleOptions(key: StackKey, answers: PartialStackConfig): readonly Op
   }
   if (key === "backend" && answers.frontend && answers.frontend !== "next") {
     return options.filter((option) => option.id !== "next");
+  }
+  if (key === "database" && answers.backend) {
+    const frontendOnly = answers.backend === "none";
+    return options.filter((option) => (option.id === "none") === frontendOnly);
+  }
+  if (key === "auth" && answers.backend === "none") {
+    return options.filter((option) => option.id !== "credentials");
   }
 
   return options;

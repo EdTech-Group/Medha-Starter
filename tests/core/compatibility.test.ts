@@ -53,6 +53,20 @@ describe("compatibility rules", () => {
     ]);
   });
 
+  test("accepts the frontend-only React app and rejects a database or sign-in without a backend", () => {
+    const frontendOnly = { frontend: "react-vite", backend: "none", database: "none" } as const;
+    expect(findCompatibilityIssues(makeStack(frontendOnly))).toEqual([]);
+    expect(
+      ruleIds(findCompatibilityIssues(makeStack({ ...frontendOnly, database: "postgres" }))),
+    ).toEqual(["database-needs-backend"]);
+    expect(
+      ruleIds(findCompatibilityIssues(makeStack({ backend: "nestjs", database: "none" }))),
+    ).toEqual(["database-needs-backend"]);
+    expect(
+      ruleIds(findCompatibilityIssues(makeStack({ ...frontendOnly, auth: "credentials" }))),
+    ).toEqual(["credentials-need-backend"]);
+  });
+
   test("lists compatible ORMs per database", () => {
     expect(compatibleOrms("mongodb")).toEqual(["mongoose"]);
     expect(compatibleOrms("postgres")).toEqual(["drizzle", "prisma"]);
@@ -60,6 +74,16 @@ describe("compatibility rules", () => {
 });
 
 describe("availability", () => {
+  test("the frontend-only React app with tests and CI is fully available", () => {
+    const stack = makeStack({
+      frontend: "react-vite",
+      backend: "none",
+      database: "none",
+      integrations: ["github-actions"],
+    });
+    expect(findAvailabilityIssues(stack)).toEqual([]);
+  });
+
   test("rejects planned options with a pointer to the list command", () => {
     const issues = findAvailabilityIssues(makeStack({ integrations: ["docker"] }));
     expect(issues.length).toBeGreaterThan(0);

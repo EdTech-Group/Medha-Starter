@@ -1,0 +1,3 @@
+[test]
+# Generated-project tests under templates/ run in generated projects, not here.
+root = "tests"

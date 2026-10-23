@@ -2,8 +2,9 @@
  * Runtime and package-runner compatibility matrix for the published package.
  *
  * Packs medha-starter exactly as npm would publish it, then, for every supported runtime and
- * runner, prints the version and generates a project from the test fixture layers, checking that
- * the README and medha.json are written and that the runner's package manager was detected.
+ * runner, prints the version and generates the default project from the templates inside the
+ * tarball, checking that the README, medha.json and the Medha pages are written and that the
+ * runner's package manager was detected.
  *
  *   bun run compat            # everything
  *   bun run compat -- --quick # current Node.js and Bun only
@@ -11,12 +12,11 @@
  * Needs network access the first time (npx downloads node@<version>, pnpm and yarn).
  */
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const root = join(import.meta.dir, "..");
-const fixtures = join(root, "tests", "fixtures", "demo-templates");
 const quick = process.argv.includes("--quick");
 // npx, pnpm and bunx are .cmd shims on Windows, which only start through a shell.
 const shell = process.platform === "win32";
@@ -144,7 +144,6 @@ function runCase(testCase: Case, outDir: string): { name: string; ok: boolean; d
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     NO_COLOR: "1",
-    MEDHA_STARTER_TEMPLATES_DIR: fixtures,
   };
   // Let each runner set its own user agent, as it would for a real user (`bun run` sets one).
   delete env.npm_config_user_agent;
@@ -168,7 +167,7 @@ function runCase(testCase: Case, outDir: string): { name: string; ok: boolean; d
 
   const target = join(outDir, "app");
   const generate = exec(
-    [target, "--yes", "--allow-planned", "--offline", "--no-install", "--no-git"],
+    [target, "--yes", "--offline", "--no-install", "--no-git"],
     testCase.cwd ?? outDir,
   );
   if (generate.status !== 0) {
@@ -183,6 +182,9 @@ function runCase(testCase: Case, outDir: string): { name: string; ok: boolean; d
     const readme = readFileSync(join(target, "README.md"), "utf8");
     const stack = JSON.parse(readFileSync(join(target, "medha.json"), "utf8")).stack;
     if (!readme.includes("# App")) throw new Error("README.md has no title");
+    if (!existsSync(join(target, "src", "medha", "routes.tsx"))) {
+      throw new Error("the Medha pages were not generated (templates missing from the package?)");
+    }
     if (stack.packageManager !== testCase.expectedPackageManager) {
       throw new Error(
         `detected package manager ${stack.packageManager}, expected ${testCase.expectedPackageManager}`,

@@ -1,19 +1,49 @@
 # Medha-Starter
 
-`medha-starter` generates full-stack TypeScript projects in the Medha visual style. You choose the
-frontend, backend, database, ORM, authentication, testing and integrations, and it writes a runnable
-project with matching dependencies, configuration, sample CRUD feature and AI-assistant guidance.
+`medha-starter` generates TypeScript projects in the Medha visual style. The default project is a
+React app built on the complete Medha theme: a landing website, sign-in and registration pages, a
+dashboard, and every Medha component as its own page, plus a component explorer, typed reusable
+components, tests and guidance for AI coding assistants.
 
-> **Status: pre-release.** The CLI, configuration model, compatibility checks and generation engine are
-> in place. Stack options become selectable as their templates are completed and verified;
-> `medha-starter list` shows what is available today.
+> **Status: pre-release.** The React + Vite frontend-only stack is available today. Full-stack
+> options (Next.js, NestJS, Elysia, databases, sign-in) become selectable as their templates are
+> completed and verified; `medha-starter list` shows what is available.
+
+## What you get
+
+```sh
+npx medha-starter create my-app
+cd my-app
+npm run dev
+```
+
+| Route | Page |
+| --- | --- |
+| `/`, `/about`, `/services`, `/gallery`, `/contact` | Landing website |
+| `/login`, `/register` | Sign-in and registration (demo forms) |
+| `/dashboard` | Dashboard in the Medha workspace layout |
+| `/dashboard/components` | Component explorer: every page in tabs by section, with search |
+| `/dashboard/<name>` | Each component: buttons, grids, typography, icons, cards, navigation, feedback, carousels, inputs, validation, tables, charts, calendar, inbox, compose, editors (WYSIWYG, tree, UML, MathML, Vedic), colour schemes, FAQ, … |
+
+- **React 19 + Vite + strict TypeScript**, React Router, Bootstrap 5.0 with the Medha palette,
+  logo, fonts and colour-scheme selector. Every page and component is `.tsx`.
+- **Reusable components** for your own screens: `AppShell`, `SiteShell`, `AuthShell`,
+  `PageHeading`, `Panel`, `MetricCard`, `Icon`, `MedhaLogo`.
+- **Checks out of the box:** Biome lint and format, TypeScript, a Medha style check, Vitest tests
+  for every page, and an optional GitHub Actions workflow (`--integrations github-actions`).
+- **Ready for AI assistants:** `AGENTS.md` and `MEDHA_STYLE.md`, entry points for Claude Code,
+  Gemini, GitHub Copilot, Cursor and Windsurf, prompt recipes in `prompts/`, and
+  `src/medha/CATALOG.md` listing every page with its route and file.
+
+Generated projects need Node.js 22.22 or newer.
 
 ## Usage
 
 ```sh
 npx medha-starter create my-app            # interactive
 npx medha-starter my-app --yes             # defaults, no prompts
-npx medha-starter my-app --backend nestjs --db mysql --pm pnpm
+npx medha-starter my-app --pm pnpm --integrations github-actions
+npx medha-starter my-app --testing none    # without the test setup
 npx medha-starter my-app --dry-run         # show the plan, write nothing
 npx medha-starter list                     # options and compatibility rules
 ```
@@ -33,7 +63,7 @@ package manager by default (override with `--pm`):
 | Yarn 2+ | `yarn dlx medha-starter my-app` | Yarn |
 
 The CLI runs on Node.js 18.18 or newer and on Bun 1.x, on Linux, macOS and Windows. Generated
-Next.js projects need Node.js 20.9 or newer (or Bun).
+projects use current Vite, React Router and Vitest releases, which need Node.js 22.22 or newer.
 
 ### Always the latest medha-starter
 
@@ -99,6 +129,16 @@ Requires Bun (development only; the published CLI runs on Node.js).
 bun install
 bun run dev -- my-app --dry-run   # run from source
 bun run check                     # format, lint, typecheck, tests, build
+```
+
+The Medha theme lives in `Bootstrap Medha/`. Its React port in
+`templates/ui/medha-bootstrap/react-vite/` is generated from it by `scripts/medha-theme.ts`, driven
+by the explicit mapping in `scripts/medha-theme.map.json`:
+
+```sh
+bun run theme:sync     # regenerate the React layer after changing the theme or the map
+bun run theme:check    # fail if the layer is out of date (also part of the tests)
+bun run verify:stacks  # generate, install and check every available combination
 ```
 
 See `AGENTS.md` for the rules on registries, compatibility rules and template layers.

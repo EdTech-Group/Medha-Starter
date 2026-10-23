@@ -15,7 +15,7 @@ import {
   TESTING_IDS,
   UI_IDS,
 } from "../types/config.js";
-import { defaultOrmFor } from "./compatibility.js";
+import { defaultBackendFor, defaultDatabaseFor, defaultOrmFor } from "./compatibility.js";
 import { CliUsageError } from "./errors.js";
 import { DEFAULT_STACK, getOptionIds, STACK_KEYS } from "./registry.js";
 
@@ -78,11 +78,12 @@ export function completeStack(
   partial: PartialStackConfig,
   detectedPackageManager: PackageManager,
 ): StackConfig {
-  const database = partial.database ?? DEFAULT_STACK.database;
-  const backend = partial.backend ?? DEFAULT_STACK.backend;
+  const frontend = partial.frontend ?? DEFAULT_STACK.frontend;
+  const backend = partial.backend ?? defaultBackendFor(frontend, partial.database);
+  const database = partial.database ?? defaultDatabaseFor(backend);
 
   return stackConfigSchema.parse({
-    frontend: partial.frontend ?? DEFAULT_STACK.frontend,
+    frontend,
     backend,
     database,
     orm: partial.orm ?? defaultOrmFor(database),

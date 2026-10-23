@@ -1,0 +1,14 @@
+Read AGENTS.md first.
+
+Replace the demo data on `<page file>` with data from `<API endpoint, e.g. GET /api/devices>`,
+which returns `<shape of the response>`.
+
+Requirements:
+- Put the API call in `src/api/<name>.ts` with typed request and response types; read the base
+  URL from `import.meta.env.VITE_API_URL`.
+- Show loading, error and empty states with existing Medha markup (panels, alerts).
+- Keep the page's existing layout and class names.
+- Never put credentials or tokens in the frontend code or in `localStorage`.
+- Add tests that mock the API for the success, error and empty cases.
+- Run `{{ runScript }} lint`, `{{ runScript }} typecheck`, `{{ runScript }} test` and
+  `{{ runScript }} build`, and report the results.

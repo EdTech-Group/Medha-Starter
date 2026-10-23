@@ -1,0 +1,74 @@
+/*ms-recolored*//* Medha Vedic Editor — bundled fonts: Noto Serif / Sans Devanagari (SIL OFL 1.1) cover Devanagari + Vedic Extensions (U+1CD0–1CF9) + Devanagari Extended (U+A8E0–A8FF) */
+@font-face{font-family:"Noto Serif Devanagari";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/NotoSerifDevanagari_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Noto Serif Devanagari";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/NotoSerifDevanagari_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Noto Sans Devanagari";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/NotoSansDevanagari_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Noto Sans Devanagari";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/NotoSansDevanagari_700Bold.woff2) format("woff2")}
+.ved{--vb:var(--ms-4a2e1b,#4a2e1b);--va:var(--ms-b45309,#b45309);--vg:var(--ms-d99b26,#d99b26);--vi:var(--ms-fffdf8,#fffdf8);--vt:var(--ms-faf0de,#faf0de);--vl:var(--ms-e4d4be,#e4d4be);color:var(--ms-2b1d12,#2b1d12)}
+.ved *{box-sizing:border-box}
+.ved-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px}
+.ved-grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.ved-grp+.ved-grp{padding-left:14px;border-left:1px solid var(--ms-efe6d8,#efe6d8)}
+.ved-sel{width:auto;min-width:92px;font-size:12px}
+.ved .btn.active{background:var(--vb);border-color:var(--vb);color:#fff}
+.ved .ved-phon{font-weight:600;min-width:150px}
+.ved-chk{font-size:12px;display:flex;align-items:center;gap:5px;margin:0 4px;cursor:pointer}
+.ved-pagewrap{background:var(--ms-f6efe3,#f6efe3);border:1px solid var(--vl);border-radius:12px;padding:18px}
+.ved-page{background:#fff;border:1px solid var(--ms-efe6d8,#efe6d8);border-radius:8px;min-height:300px;max-height:56vh;overflow:auto;padding:26px 34px;line-height:2.1;font-family:"Noto Serif Devanagari","Noto Sans Devanagari",serif;font-size:24px;outline:none;color:var(--ms-1d130b,#1d130b);font-feature-settings:"kern","liga","calt","ccmp","mark","mkmk";font-kerning:normal;text-rendering:optimizeLegibility;word-break:normal}
+.ved-page:focus{border-color:var(--vg);box-shadow:0 0 0 3px rgba(var(--ms-rgb-217-155-38,217,155,38),.28)}
+.ved-page p,.ved-page div,.ved-page li,.ved-page blockquote{margin:0 0 .35em;color:inherit;font-size:inherit;line-height:inherit}.ved-page ul,.ved-page ol{color:inherit;margin:0 0 .35em}.ved-page h1{font-size:1.7em}.ved-page h2{font-size:1.4em}.ved-page h3{font-size:1.2em}
+.ved-page h1,.ved-page h2,.ved-page h3{margin:.3em 0;font-weight:700;line-height:1.7}
+.ved-page blockquote{border-left:4px solid var(--vg);margin:.4em 0;padding:.1em 1em;background:var(--ms-fdf7ea,#fdf7ea)}
+.ved-page:empty::before,.ved-page>p:only-child:has(>br:only-child)::before{content:attr(data-ph);color:var(--ms-b8a58f,#b8a58f);font-size:.62em;font-family:system-ui,sans-serif;position:absolute;pointer-events:none}
+.ved-stbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#73808b;margin:8px 2px 4px;min-height:20px}
+.ved-insp{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;min-height:46px;align-items:center}
+.ved-cp{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--vl);background:var(--vi);border-radius:8px;padding:2px 8px;min-width:54px}
+.ved-cp b{font:400 22px/1.5 "Noto Serif Devanagari",serif;color:var(--vb)}.ved-cp i{font:11px ui-monospace,Consolas,monospace;color:var(--va);font-style:normal}
+.ved-cp-empty{font-size:12px;color:var(--ms-a99a88,#a99a88)}
+.ved-kb{border:1px solid var(--vl);border-radius:12px;background:var(--vi);padding:12px 14px 14px;margin-bottom:14px}
+.ved-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ved-tab{border:1px solid var(--vl);background:#fff;color:var(--vb);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer}
+.ved-tab[aria-selected=true]{background:var(--vb);border-color:var(--vb);color:#fff}.ved-tab:focus-visible{outline:3px solid var(--vg);outline-offset:2px}
+.ved-knote{font-size:12px;color:#73808b;margin:2px 0 10px}
+.ved-krow{display:flex;gap:6px;margin-bottom:6px;justify-content:center;flex-wrap:nowrap}
+.ved-krow.wrapx{flex-wrap:wrap;justify-content:flex-start}
+.ved-rs{flex-wrap:wrap}.ved-r2{padding-left:26px}.ved-r3{padding-left:56px}
+.ved-kh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--va);margin:12px 0 6px;font-weight:700}
+.ved-key{position:relative;width:58px;height:58px;border:1px solid var(--vl);border-bottom-width:3px;background:#fff;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;color:var(--vb);transition:background .1s}
+.ved-key:hover{background:var(--vt)}.ved-key:active,.ved-key.on{background:var(--vg);border-color:var(--va);color:var(--ms-2b1d12,#2b1d12)}
+.ved-key:focus-visible{outline:3px solid var(--vg);outline-offset:1px}
+.ved-key .k-big{font:400 24px/1 "Noto Serif Devanagari","Noto Sans Devanagari",serif;padding-top:6px}
+.ved-key .k-sm{position:absolute;left:5px;top:3px;font:600 10px/1 ui-monospace,Consolas,monospace;color:var(--va);max-width:48px;overflow:hidden}
+.ved-key.dim .k-big{font:500 16px system-ui,sans-serif;color:var(--ms-b8a58f,#b8a58f);padding-top:8px}
+.ved-key.wide{width:auto;min-width:64px;padding:0 10px}.ved-key.space{width:300px}.ved-key.sq{width:56px}
+.ved-key.wide .k-big{font-size:22px}
+.ved-helpbox{border:1px solid var(--vl);border-radius:12px;background:#fff;padding:10px 16px;margin-bottom:6px}.ved-helpbox summary{cursor:pointer;font-weight:600;color:var(--vb);font-size:13px}
+.ved-helpgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px 28px;margin-top:10px}
+.ved-helpgrid h5{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--va);margin:10px 0 4px}
+.ved-helpgrid table{font-size:12px;margin:0}.ved-helpgrid th.code{font:600 12px ui-monospace,Consolas,monospace;color:var(--vb);white-space:nowrap}.ved-helpgrid td{font-family:"Noto Serif Devanagari",system-ui,serif;font-size:14px}
+@media(max-width:700px){.ved-key{width:30px;height:46px;border-radius:7px}.ved-key .k-big{font-size:17px}.ved-key .k-sm{font-size:8px;left:3px}.ved-key.sq{width:42px;height:48px}.ved-key.space{width:140px}.ved-r2,.ved-r3{padding-left:0}.ved-krow{gap:3px}.ved-page{padding:16px 14px}.ved-grp+.ved-grp{border:0;padding:0}}
+@media print{body *{visibility:hidden}.ved-page,.ved-page *{visibility:visible}.ved-page{position:absolute;left:0;top:0;width:100%;max-height:none;border:0;padding:0;overflow:visible}}
+/* ---- additional Google Fonts (SIL OFL 1.1) ---- */
+@font-face{font-family:"Tiro Devanagari Sanskrit";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/TiroDevanagariSanskrit_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Tiro Devanagari Sanskrit";font-weight:400;font-style:italic;font-display:swap;src:url(/medha/fonts/TiroDevanagariSanskrit_400Regular_Italic.woff2) format("woff2")}
+@font-face{font-family:"Mukta";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Mukta_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Mukta";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Mukta_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Tiro Devanagari Hindi";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/TiroDevanagariHindi_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Tiro Devanagari Hindi";font-weight:400;font-style:italic;font-display:swap;src:url(/medha/fonts/TiroDevanagariHindi_400Regular_Italic.woff2) format("woff2")}
+@font-face{font-family:"Martel";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Martel_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Martel";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Martel_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Eczar";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Eczar_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Eczar";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Eczar_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Sahitya";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Sahitya_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Sahitya";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Sahitya_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Yantramanav";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Yantramanav_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Yantramanav";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Yantramanav_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Palanquin";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Palanquin_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Palanquin";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Palanquin_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Glegoo";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Glegoo_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Glegoo";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Glegoo_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Sarala";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Sarala_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Sarala";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/Sarala_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Kurale";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/Kurale_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Pragati Narrow";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/PragatiNarrow_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Pragati Narrow";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/PragatiNarrow_700Bold.woff2) format("woff2")}
+@font-face{font-family:"Inknut Antiqua";font-weight:400;font-style:normal;font-display:swap;src:url(/medha/fonts/InknutAntiqua_400Regular.woff2) format("woff2")}
+@font-face{font-family:"Inknut Antiqua";font-weight:700;font-style:normal;font-display:swap;src:url(/medha/fonts/InknutAntiqua_700Bold.woff2) format("woff2")}

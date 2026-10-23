@@ -29,7 +29,16 @@ export const STACK_FILE = "medha.json";
 export const README_FILE = "README.md";
 
 export function hasSeparateBackend(stack: StackConfig): boolean {
-  return stack.backend !== "next";
+  return stack.backend !== "next" && stack.backend !== "none";
+}
+
+export function isFrontendOnly(stack: StackConfig): boolean {
+  return stack.backend === "none";
+}
+
+/** Names the variant of a whole-project layer (integrations): "react-vite", "next-next", … */
+function stackVariant(stack: StackConfig): string {
+  return isFrontendOnly(stack) ? stack.frontend : `${stack.frontend}-${stack.backend}`;
 }
 
 /**
@@ -50,10 +59,12 @@ export function selectLayers(stack: StackConfig): LayerSelection[] {
 
   layers.push({ id: `frontend/${stack.frontend}`, destination: web });
   layers.push({ id: `ui/${stack.ui}/${stack.frontend}`, destination: web });
-  layers.push({ id: `backend/${stack.backend}`, destination: api });
-  layers.push({ id: `database/${stack.orm}/${stack.database}`, destination: api });
-  layers.push({ id: `feature/projects/api/${stack.backend}-${stack.orm}`, destination: api });
-  layers.push({ id: `feature/projects/web/${stack.frontend}`, destination: web });
+  if (!isFrontendOnly(stack)) {
+    layers.push({ id: `backend/${stack.backend}`, destination: api });
+    layers.push({ id: `database/${stack.orm}/${stack.database}`, destination: api });
+    layers.push({ id: `feature/projects/api/${stack.backend}-${stack.orm}`, destination: api });
+    layers.push({ id: `feature/projects/web/${stack.frontend}`, destination: web });
+  }
 
   if (stack.auth === "credentials") {
     layers.push({ id: `auth/credentials/api/${stack.backend}-${stack.orm}`, destination: api });
@@ -68,11 +79,11 @@ export function selectLayers(stack: StackConfig): LayerSelection[] {
   }
 
   for (const integration of stack.integrations) {
-    layers.push({ id: `integration/${integration}`, destination: "." });
+    layers.push({ id: `integration/${integration}/${stackVariant(stack)}`, destination: "." });
   }
 
   // Always last: AI-assistant guidance and style checks describe the finished project.
-  layers.push({ id: "ai/medha", destination: "." });
+  layers.push({ id: `ai/medha/${stack.frontend}`, destination: "." });
 
   return layers;
 }
@@ -90,13 +101,49 @@ export function buildTemplateVariables(
     packageManager: stack.packageManager,
     runScript: formatRunCommand(stack.packageManager, "").trimEnd(),
     installCommand: stack.packageManager === "yarn" ? "yarn" : `${stack.packageManager} install`,
-    apiBaseUrl: hasSeparateBackend(stack) ? "http://localhost:4000" : "/api",
+    apiBaseUrl: isFrontendOnly(stack)
+      ? ""
+      : hasSeparateBackend(stack)
+        ? "http://localhost:4000"
+        : "/api",
+    ciSetup: CI_SETUP[stack.packageManager],
+    ciInstall: CI_INSTALL[stack.packageManager],
+    ciTestStep:
+      stack.testing === "none"
+        ? ""
+        : `\n      - run: ${formatRunCommand(stack.packageManager, "test")}`,
     frontend: stack.frontend,
     backend: stack.backend,
     database: stack.database,
     orm: stack.orm,
     generatorVersion,
   };
+}
+
+/** GitHub Actions steps that install the package manager and Node.js (6-space indent). */
+const CI_SETUP: Readonly<Record<StackConfig["packageManager"], string>> = {
+  npm: ciNode("npm"),
+  pnpm: `      - uses: pnpm/action-setup@v4\n        with:\n          version: 10\n${ciNode("pnpm")}`,
+  yarn: ciNode("yarn"),
+  bun: `      - uses: oven-sh/setup-bun@v2\n${ciNode(null)}`,
+};
+
+/** Installs exactly what the committed lockfile lists. */
+const CI_INSTALL: Readonly<Record<StackConfig["packageManager"], string>> = {
+  npm: "npm ci",
+  pnpm: "pnpm install --frozen-lockfile",
+  yarn: "yarn install --frozen-lockfile",
+  bun: "bun install --frozen-lockfile",
+};
+
+function ciNode(cache: string | null): string {
+  const lines = [
+    "      - uses: actions/setup-node@v4",
+    "        with:",
+    "          node-version: 22",
+    ...(cache ? [`          cache: ${cache}`] : []),
+  ];
+  return lines.join("\n");
 }
 
 export type CreatePlanOptions = {

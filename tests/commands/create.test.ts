@@ -7,6 +7,9 @@ import type { CreateCliOptions } from "../../src/types/cli.js";
 import { pathExists } from "../../src/utils/fs.js";
 import { makeStack, makeTempDir, removeDir, writeFixtureTemplates } from "../helpers/fixtures.js";
 
+/** The full-stack Next.js baseline the demo fixture layers model, as CLI flag values. */
+const FULL_STACK_FLAGS = { frontend: "next", backend: "next", database: "postgres" };
+
 let cwd: string;
 
 beforeEach(async () => {
@@ -80,7 +83,7 @@ describe("runCreateCommand", () => {
     );
 
     const run = () =>
-      runCreateCommand(options({ projectName: ".", allowPlanned: true }), {
+      runCreateCommand(options({ projectName: ".", allowPlanned: true, stack: FULL_STACK_FLAGS }), {
         ...context(),
         cwd: repo,
         templatesRoot,
@@ -104,8 +107,17 @@ describe("runCreateCommand", () => {
   });
 
   test("still rejects planned options without --allow-planned", async () => {
-    await expect(runCreateCommand(options({ projectName: "app" }), context())).rejects.toThrow(
-      "is planned but not available",
-    );
+    await expect(
+      runCreateCommand(options({ projectName: "app", stack: FULL_STACK_FLAGS }), context()),
+    ).rejects.toThrow("is planned but not available");
+  });
+
+  test("rejects a database without a backend", async () => {
+    await expect(
+      runCreateCommand(
+        options({ projectName: "app", stack: { backend: "none", database: "postgres" } }),
+        context(),
+      ),
+    ).rejects.toThrow('Database "postgres" needs a backend');
   });
 });

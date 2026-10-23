@@ -2,7 +2,8 @@ import { CliUsageError } from "./core/errors.js";
 import type { CreateCliOptions, ParsedCliCommand, RawStackFlags } from "./types/cli.js";
 import type { StackKey } from "./types/config.js";
 
-const HELP_TEXT = `Generate a full-stack TypeScript project in the Medha style.
+const HELP_TEXT = `Generate a TypeScript project in the Medha style: a React app with a landing site,
+sign-in, a dashboard and every Medha component, ready for AI coding assistants.
 
 Usage:
   medha-starter [create] [project-name] [options]
@@ -10,9 +11,9 @@ Usage:
 
 Stack options (prompted for when omitted on an interactive terminal):
   --frontend <id>        next | react-vite
-  --backend <id>         next | nestjs | elysia
-  --database, --db <id>  postgres | mysql | mongodb
-  --orm <id>             drizzle | prisma | mongoose
+  --backend <id>         none | next | nestjs | elysia
+  --database, --db <id>  none | postgres | mysql | mongodb
+  --orm <id>             none | drizzle | prisma | mongoose
   --ui <id>              medha-bootstrap
   --auth <id>            none | credentials
   --testing <id>         vitest | none
@@ -34,11 +35,13 @@ Maintainer options (for developing templates; output may not work):
   --allow-planned        Allow options that are still marked "planned"
   MEDHA_STARTER_TEMPLATES_DIR=<path>  Read template layers from another directory
 
+Run "medha-starter list" to see which options can be generated today.
+
 Examples:
   npx medha-starter create my-app
   npx medha-starter my-app --yes
-  npx medha-starter my-app --backend nestjs --db mysql --pm pnpm
-  npx medha-starter my-app --backend elysia --db postgres --pm bun --dry-run
+  npx medha-starter my-app --yes --integrations github-actions --pm pnpm
+  npx medha-starter my-app --testing none --dry-run
   npx medha-starter list
   bunx medha-starter my-app          # Bun (add --bun to run on the Bun runtime)
   pnpm dlx medha-starter my-app      # pnpm; yarn dlx works the same way

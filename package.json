@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
     "dev": "bun src/cli.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.build.json --noEmit",
     "lint": "biome lint src tests scripts",
@@ -40,6 +41,9 @@
     "test": "bun test",
     "compat": "bun scripts/compat.ts",
     "deps:outdated": "bun scripts/deps-outdated.ts",
+    "theme:sync": "bun scripts/medha-theme.ts",
+    "theme:check": "bun scripts/medha-theme.ts --check",
+    "verify:stacks": "bun scripts/verify-stacks.ts",
     "check": "bun run fmt:check && bun run lint && bun run typecheck && bun run test && bun run build"
   },
   "dependencies": {
@@ -54,6 +58,7 @@
     "@types/node": "^18.19.130",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.8.0",
+    "parse5": "^8.0.1",
     "typescript": "^7.0.2"
   }
 }

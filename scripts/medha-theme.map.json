@@ -1,0 +1,318 @@
+{
+  "source": "Bootstrap Medha",
+  "output": "templates/ui/medha-bootstrap/react-vite/files",
+  "globalStyles": ["bootstrap.min.css", "theme.css", "pages.css"],
+  "pageStyles": [
+    "wysiwyg.css",
+    "tree.css",
+    "tree-editor.css",
+    "uml-editor.css",
+    "math-editor.css",
+    "vedic.css",
+    "site.css",
+    "scheme.css"
+  ],
+  "vendorScripts": ["bootstrap.bundle.min.js"],
+  "pageScripts": [
+    "scheme.js",
+    "pages.js",
+    "app.js",
+    "site.js",
+    "wysiwyg.js",
+    "tree.js",
+    "tree-editor.js",
+    "uml-editor.js",
+    "mathml.js",
+    "math-editor.js",
+    "vedic.js"
+  ],
+  "fromNpm": {
+    "bootstrap.min.css": "bootstrap/dist/css/bootstrap.min.css",
+    "bootstrap.bundle.min.js": "bootstrap/dist/js/bootstrap.bundle.min.js"
+  },
+  "shells": {
+    "app": {
+      "chromeFrom": "blank.html",
+      "styles": ["scheme.css"],
+      "scripts": ["scheme.js", "pages.js"]
+    },
+    "site": {
+      "chromeFrom": "site-home.html",
+      "styles": ["site.css", "scheme.css"],
+      "scripts": ["scheme.js", "pages.js", "site.js"]
+    },
+    "auth": {
+      "styles": ["scheme.css"],
+      "scripts": ["scheme.js", "pages.js"]
+    }
+  },
+  "pages": [
+    {
+      "file": "index.html",
+      "path": "/dashboard",
+      "component": "DashboardPage",
+      "shell": "custom"
+    },
+    {
+      "file": "buttons.html",
+      "path": "/dashboard/buttons",
+      "component": "ButtonsPage",
+      "shell": "app"
+    },
+    {
+      "file": "grids.html",
+      "path": "/dashboard/grids",
+      "component": "GridsPage",
+      "shell": "app"
+    },
+    {
+      "file": "typo.html",
+      "path": "/dashboard/typography",
+      "component": "TypographyPage",
+      "shell": "app"
+    },
+    {
+      "file": "icons.html",
+      "path": "/dashboard/icons",
+      "component": "IconsPage",
+      "shell": "app"
+    },
+    {
+      "file": "general.html",
+      "path": "/dashboard/general",
+      "component": "GeneralPage",
+      "shell": "app"
+    },
+    {
+      "file": "media.html",
+      "path": "/dashboard/media",
+      "component": "MediaPage",
+      "shell": "app"
+    },
+    {
+      "file": "widgets.html",
+      "path": "/dashboard/widgets",
+      "component": "WidgetsPage",
+      "shell": "app"
+    },
+    {
+      "file": "tree.html",
+      "path": "/dashboard/tree",
+      "component": "TreePage",
+      "shell": "app"
+    },
+    {
+      "file": "tree-editor.html",
+      "path": "/dashboard/tree-editor",
+      "component": "TreeEditorPage",
+      "shell": "app"
+    },
+    {
+      "file": "uml-editor.html",
+      "path": "/dashboard/uml-editor",
+      "component": "UmlEditorPage",
+      "shell": "app"
+    },
+    {
+      "file": "math-editor.html",
+      "path": "/dashboard/math-editor",
+      "component": "MathEditorPage",
+      "shell": "app"
+    },
+    {
+      "file": "vedic-editor.html",
+      "path": "/dashboard/vedic-editor",
+      "component": "VedicEditorPage",
+      "shell": "app"
+    },
+    {
+      "file": "colors.html",
+      "path": "/dashboard/colors",
+      "component": "ColorsPage",
+      "shell": "app"
+    },
+    {
+      "file": "codes.html",
+      "path": "/dashboard/codes",
+      "component": "CodesPage",
+      "shell": "app"
+    },
+    {
+      "file": "navigation.html",
+      "path": "/dashboard/navigation",
+      "component": "NavigationPage",
+      "shell": "app"
+    },
+    {
+      "file": "cards.html",
+      "path": "/dashboard/cards",
+      "component": "CardsPage",
+      "shell": "app"
+    },
+    {
+      "file": "feedback.html",
+      "path": "/dashboard/feedback",
+      "component": "FeedbackPage",
+      "shell": "app"
+    },
+    {
+      "file": "carousels.html",
+      "path": "/dashboard/carousels",
+      "component": "CarouselsPage",
+      "shell": "app"
+    },
+    {
+      "file": "site-home.html",
+      "path": "/",
+      "component": "SiteHomePage",
+      "shell": "site"
+    },
+    {
+      "file": "site-about.html",
+      "path": "/about",
+      "component": "SiteAboutPage",
+      "shell": "site"
+    },
+    {
+      "file": "site-services.html",
+      "path": "/services",
+      "component": "SiteServicesPage",
+      "shell": "site"
+    },
+    {
+      "file": "site-gallery.html",
+      "path": "/gallery",
+      "component": "SiteGalleryPage",
+      "shell": "site"
+    },
+    {
+      "file": "site-contact.html",
+      "path": "/contact",
+      "component": "SiteContactPage",
+      "shell": "site"
+    },
+    {
+      "file": "inbox.html",
+      "path": "/dashboard/inbox",
+      "component": "InboxPage",
+      "shell": "app"
+    },
+    {
+      "file": "compose.html",
+      "path": "/dashboard/compose",
+      "component": "ComposePage",
+      "shell": "app"
+    },
+    {
+      "file": "input.html",
+      "path": "/dashboard/inputs",
+      "component": "InputPage",
+      "shell": "app"
+    },
+    {
+      "file": "validation.html",
+      "path": "/dashboard/validation",
+      "component": "ValidationPage",
+      "shell": "app"
+    },
+    {
+      "file": "table.html",
+      "path": "/dashboard/tables",
+      "component": "TablePage",
+      "shell": "app"
+    },
+    {
+      "file": "charts.html",
+      "path": "/dashboard/charts",
+      "component": "ChartsPage",
+      "shell": "app"
+    },
+    {
+      "file": "calendar.html",
+      "path": "/dashboard/calendar",
+      "component": "CalendarPage",
+      "shell": "app"
+    },
+    {
+      "file": "editor.html",
+      "path": "/dashboard/editor",
+      "component": "EditorPage",
+      "shell": "app"
+    },
+    {
+      "file": "signin.html",
+      "path": "/login",
+      "component": "SignInPage",
+      "shell": "auth"
+    },
+    {
+      "file": "signup.html",
+      "path": "/register",
+      "component": "SignUpPage",
+      "shell": "auth"
+    },
+    {
+      "file": "faq.html",
+      "path": "/dashboard/faq",
+      "component": "FaqPage",
+      "shell": "app"
+    },
+    {
+      "file": "blank.html",
+      "path": "/dashboard/blank",
+      "component": "BlankPage",
+      "shell": "app"
+    },
+    {
+      "file": "404.html",
+      "path": "/404",
+      "component": "NotFoundPage",
+      "shell": "auth",
+      "notFound": true
+    },
+    {
+      "file": "500.html",
+      "path": "/500",
+      "component": "ServerErrorPage",
+      "shell": "auth"
+    }
+  ],
+  "sidebarExtras": [
+    {
+      "file": "components.html",
+      "path": "/dashboard/components",
+      "label": "Component explorer",
+      "icon": "layout",
+      "after": "index.html"
+    }
+  ],
+  "attributes": [
+    {
+      "files": ["editor.html", "compose.html"],
+      "class": "wysiwyg",
+      "name": "data-math-src",
+      "value": "/math-embed.html"
+    }
+  ],
+  "embeds": [
+    {
+      "file": "math-embed.html",
+      "output": "public/math-embed.html",
+      "assets": "public/medha/embed",
+      "assetsUrl": "/medha/embed"
+    }
+  ],
+  "publicAssets": {
+    "medha-logo.svg": "public/medha/medha-logo.svg",
+    "fonts": "public/medha/fonts"
+  },
+  "assetUrls": {
+    "assets/medha-logo.svg": "/medha/medha-logo.svg"
+  },
+  "cssUrls": {
+    "fonts/": "/medha/fonts/"
+  },
+  "docs": {
+    "README.md": "src/medha/THEME.md"
+  }
+}

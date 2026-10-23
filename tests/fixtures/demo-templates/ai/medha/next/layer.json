@@ -1,6 +1,6 @@
 {
-  "id": "ai/medha",
-  "description": "Demo fixture for ai/medha",
+  "id": "ai/medha/next",
+  "description": "Demo fixture for ai/medha/next",
   "packageJson": {
     "scripts": {
       "check:style": "node scripts/check-style.mjs"

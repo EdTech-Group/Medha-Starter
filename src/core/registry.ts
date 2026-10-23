@@ -20,8 +20,8 @@ export const STACK_REGISTRY: StackRegistry = {
       {
         id: "react-vite",
         label: "React + Vite",
-        description: "Client-only React SPA talking to a separate API.",
-        status: "planned",
+        description: "React SPA: landing site, sign-in, dashboard and every Medha component.",
+        status: "available",
       },
     ],
   },
@@ -29,6 +29,12 @@ export const STACK_REGISTRY: StackRegistry = {
     title: "Backend",
     multiple: false,
     options: [
+      {
+        id: "none",
+        label: "None (frontend only)",
+        description: "No API server; add one later or call an existing API.",
+        status: "available",
+      },
       {
         id: "next",
         label: "Next.js Route Handlers",
@@ -53,6 +59,7 @@ export const STACK_REGISTRY: StackRegistry = {
     title: "Database",
     multiple: false,
     options: [
+      { id: "none", label: "None", description: "No database.", status: "available" },
       { id: "postgres", label: "PostgreSQL", description: "Relational, SQL.", status: "planned" },
       { id: "mysql", label: "MySQL", description: "Relational, SQL.", status: "planned" },
       { id: "mongodb", label: "MongoDB", description: "Document store.", status: "planned" },
@@ -62,6 +69,7 @@ export const STACK_REGISTRY: StackRegistry = {
     title: "ORM / driver",
     multiple: false,
     options: [
+      { id: "none", label: "None", description: "No database access layer.", status: "available" },
       {
         id: "drizzle",
         label: "Drizzle ORM",
@@ -90,7 +98,7 @@ export const STACK_REGISTRY: StackRegistry = {
         id: "medha-bootstrap",
         label: "Medha (Bootstrap 5)",
         description: "Medha palette, logo, sidebar layout and page set.",
-        status: "planned",
+        status: "available",
       },
     ],
   },
@@ -98,7 +106,7 @@ export const STACK_REGISTRY: StackRegistry = {
     title: "Authentication",
     multiple: false,
     options: [
-      { id: "none", label: "None", description: "No sign-in.", status: "planned" },
+      { id: "none", label: "None", description: "No sign-in.", status: "available" },
       {
         id: "credentials",
         label: "Email + password",
@@ -115,9 +123,9 @@ export const STACK_REGISTRY: StackRegistry = {
         id: "vitest",
         label: "Vitest",
         description: "Unit and API tests.",
-        status: "planned",
+        status: "available",
       },
-      { id: "none", label: "None", description: "No test setup.", status: "planned" },
+      { id: "none", label: "None", description: "No test setup.", status: "available" },
     ],
   },
   integrations: {
@@ -133,8 +141,8 @@ export const STACK_REGISTRY: StackRegistry = {
       {
         id: "github-actions",
         label: "GitHub Actions",
-        description: "CI workflow running lint, typecheck, tests and build.",
-        status: "planned",
+        description: "CI workflow running lint, typecheck, style check, tests and build.",
+        status: "available",
       },
     ],
   },
@@ -163,10 +171,9 @@ export const STACK_KEYS: readonly StackKey[] = [
   "packageManager",
 ];
 
-export const DEFAULT_STACK: Omit<StackConfig, "orm" | "packageManager"> = {
-  frontend: "next",
-  backend: "next",
-  database: "postgres",
+/** Backend, database and ORM follow from the other choices (see completeStack). */
+export const DEFAULT_STACK: Omit<StackConfig, "backend" | "database" | "orm" | "packageManager"> = {
+  frontend: "react-vite",
   ui: "medha-bootstrap",
   auth: "none",
   testing: "vitest",

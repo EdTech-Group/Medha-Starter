@@ -1,0 +1,14 @@
+Read AGENTS.md and MEDHA_STYLE.md first.
+
+Create a reusable component `<ComponentName>` from the "<element, e.g. activity timeline>" on the
+theme page `<theme page, e.g. src/medha/pages/WidgetsPage.tsx>`.
+
+Requirements:
+- Put it in `src/components/medha/<ComponentName>.tsx` and export it from
+  `src/components/medha/index.ts`.
+- Keep the theme's markup and class names exactly; turn the repeated parts into typed props
+  (`readonly` fields, no `any`). Interactive behaviour uses React state, not DOM queries.
+- Use `Icon` for icons and the `--medha-*` tokens for any colour.
+- Add a test that renders it with sample props.
+- Run `{{ runScript }} lint`, `{{ runScript }} typecheck`, `{{ runScript }} check:style` and
+  `{{ runScript }} test`, and report the results.

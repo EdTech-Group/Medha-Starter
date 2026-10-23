@@ -14,7 +14,7 @@ describe("parseStackFlags", () => {
   test("rejects unknown ids and lists the valid ones", () => {
     expect(() => parseStackFlags({ database: "oracle" })).toThrow(CliUsageError);
     expect(() => parseStackFlags({ database: "oracle" })).toThrow(
-      'Unknown value "oracle" for --database. Valid values: postgres, mysql, mongodb.',
+      'Unknown value "oracle" for --database. Valid values: none, postgres, mysql, mongodb.',
     );
   });
 
@@ -28,17 +28,31 @@ describe("parseStackFlags", () => {
 });
 
 describe("completeStack", () => {
-  test("uses the documented defaults", () => {
+  test("defaults to the frontend-only React app", () => {
     expect(completeStack({}, "pnpm")).toEqual({
-      frontend: "next",
-      backend: "next",
-      database: "postgres",
-      orm: "drizzle",
+      frontend: "react-vite",
+      backend: "none",
+      database: "none",
+      orm: "none",
       ui: "medha-bootstrap",
       auth: "none",
       testing: "vitest",
       integrations: [],
       packageManager: "pnpm",
+    });
+  });
+
+  test("a database implies a backend, and a backend implies a database", () => {
+    expect(completeStack({ database: "postgres" }, "npm")).toMatchObject({
+      frontend: "react-vite",
+      backend: "nestjs",
+      orm: "drizzle",
+    });
+    expect(completeStack({ frontend: "next", database: "mysql" }, "npm").backend).toBe("next");
+    expect(completeStack({ backend: "nestjs" }, "npm").database).toBe("postgres");
+    expect(completeStack({ backend: "none" }, "npm")).toMatchObject({
+      database: "none",
+      orm: "none",
     });
   });
 

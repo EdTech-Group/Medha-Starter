@@ -1,0 +1,6 @@
+/*
+ * Styles for your own screens, loaded after the Medha theme.
+ * Use the Medha design tokens (var(--medha-brown), var(--medha-amber), var(--medha-gold),
+ * var(--medha-ivory), var(--medha-ink), var(--medha-muted), var(--medha-border)) instead of
+ * hard-coded colours, so the colour-scheme selector keeps working.
+ */

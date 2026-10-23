@@ -141,7 +141,13 @@ export async function runCreateCommand(
     await installDependencies(stack.packageManager, targetDirectory);
   }
 
-  log(formatNextSteps(project, context.cwd));
+  log(
+    formatNextSteps(
+      project,
+      context.cwd,
+      plan.files.some((file) => file.path.endsWith(".env.example")),
+    ),
+  );
   return plan;
 }
 
@@ -193,13 +199,13 @@ async function initGit(directory: string, log: (message: string) => void): Promi
   }
 }
 
-function formatNextSteps(project: ProjectConfig, cwd: string): string {
+function formatNextSteps(project: ProjectConfig, cwd: string, hasEnvExample: boolean): string {
   const { packageManager } = project.stack;
   const relativeTarget = relative(cwd, project.targetDirectory) || ".";
   const steps = [
     ...(relativeTarget !== "." ? [`cd ${relativeTarget}`] : []),
     ...(project.install ? [] : [packageManager === "yarn" ? "yarn" : `${packageManager} install`]),
-    "cp .env.example .env   # then set real values (see README.md)",
+    ...(hasEnvExample ? ["cp .env.example .env   # then set real values (see README.md)"] : []),
     formatRunCommand(packageManager, "dev"),
   ];
 

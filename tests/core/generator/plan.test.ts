@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { createGenerationPlan, selectLayers } from "../../../src/core/generator/plan.js";
+import {
+  buildTemplateVariables,
+  createGenerationPlan,
+  selectLayers,
+} from "../../../src/core/generator/plan.js";
 import type { StackConfig } from "../../../src/types/config.js";
 import {
   type FixtureLayer,
@@ -43,7 +47,26 @@ describe("selectLayers", () => {
       "feature/projects/api/next-drizzle -> .",
       "feature/projects/web/next -> .",
       "testing/vitest/next -> .",
-      "ai/medha -> .",
+      "ai/medha/next -> .",
+    ]);
+  });
+
+  test("a frontend-only app has no backend, database or feature layers", () => {
+    expect(
+      ids(
+        makeStack({
+          frontend: "react-vite",
+          backend: "none",
+          database: "none",
+          integrations: ["github-actions"],
+        }),
+      ),
+    ).toEqual([
+      "frontend/react-vite -> .",
+      "ui/medha-bootstrap/react-vite -> .",
+      "testing/vitest/react-vite -> .",
+      "integration/github-actions/react-vite -> .",
+      "ai/medha/react-vite -> .",
     ]);
   });
 
@@ -70,9 +93,24 @@ describe("selectLayers", () => {
       "auth/credentials/web/next -> apps/web",
       "testing/vitest/next -> apps/web",
       "testing/vitest/nestjs -> apps/api",
-      "integration/docker -> .",
-      "ai/medha -> .",
+      "integration/docker/next-nestjs -> .",
+      "ai/medha/next -> .",
     ]);
+  });
+});
+
+describe("buildTemplateVariables", () => {
+  test("gives the CI workflow the package manager's setup, install and test steps", () => {
+    const variables = (partial: Parameters<typeof makeStack>[0]) =>
+      buildTemplateVariables(makeProject("/tmp/app", makeStack(partial)), "1.0.0");
+
+    expect(variables({ packageManager: "npm" })).toMatchObject({
+      ciInstall: "npm ci",
+      ciTestStep: "\n      - run: npm run test",
+    });
+    expect(variables({ packageManager: "pnpm" }).ciSetup).toContain("pnpm/action-setup@v4");
+    expect(variables({ packageManager: "bun" }).ciSetup).toContain("oven-sh/setup-bun@v2");
+    expect(variables({ packageManager: "yarn", testing: "none" }).ciTestStep).toBe("");
   });
 });
 
@@ -254,6 +292,6 @@ describe("createGenerationPlan", () => {
         templatesRoot: templates,
         generatorVersion: "1.0.0",
       }),
-    ).rejects.toThrow('Template layer "ai/medha" is missing');
+    ).rejects.toThrow('Template layer "ai/medha/next" is missing');
   });
 });

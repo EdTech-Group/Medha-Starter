@@ -68,6 +68,12 @@ Generated applications are composed from template layers under `templates/`.
 
 - **MUST** preserve the Medha theme from `Bootstrap Medha/` (palette, logo, sidebar layout, page set).
   Adapt it through explicit mapping files; never replace it with a generic theme.
+- The React port is generated: `scripts/medha-theme.ts` converts the theme using
+  `scripts/medha-theme.map.json` into `src/medha/`, `public/medha/` and the embeds of
+  `templates/ui/medha-bootstrap/react-vite/files/`. **MUST NOT** hand-edit those paths; change the
+  theme or the map and run `bun run theme:sync`. Everything else in that layer is hand-written.
+- **MUST** run `bun run verify:stacks` (Node.js 22.22+, every package manager on PATH) before
+  marking an option `"available"` or changing a template layer it uses.
 
 ### Code organisation
 

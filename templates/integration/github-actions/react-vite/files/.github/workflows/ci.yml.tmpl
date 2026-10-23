@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Lint, typecheck, style, tests and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+{{ ciSetup }}
+      - run: {{ ciInstall }}
+      - run: {{ runScript }} lint
+      - run: {{ runScript }} typecheck
+      - run: {{ runScript }} check:style{{ ciTestStep }}
+      - run: {{ runScript }} build

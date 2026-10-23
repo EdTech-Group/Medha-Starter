@@ -1,0 +1,27 @@
+/*ms-recolored*//* UML diagram editor */
+.uml-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.uml-tab{border:1px solid var(--ms-e4d4be,#e4d4be);background:#fff;color:var(--ms-4a2e1b,#4a2e1b);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer}
+.uml-tab:hover{background:var(--ms-faf0de,#faf0de)}.uml-tab[aria-selected="true"]{background:var(--ms-4a2e1b,#4a2e1b);border-color:var(--ms-4a2e1b,#4a2e1b);color:#fff}
+.uml-tab:focus-visible{outline:3px solid var(--ms-d99b26,#d99b26);outline-offset:2px}
+.uml-bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-bottom:12px}.uml-bar .te-grp+.te-grp{padding-left:16px;border-left:1px solid var(--ms-efe6d8,#efe6d8)}
+.uml-wrap{display:grid;grid-template-columns:200px minmax(0,1fr) 270px;gap:12px;align-items:start}
+@media(max-width:1199px){.uml-wrap{grid-template-columns:1fr}}
+.uml-side{border:1px solid var(--ms-efe6d8,#efe6d8);border-radius:12px;background:var(--ms-fffdf8,#fffdf8);padding:12px;max-height:660px;overflow:auto}
+.uml-side h3{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ms-a57744,#a57744);margin:0 0 8px;font-weight:600}.uml-side h3:not(:first-child){margin-top:16px}
+.uml-pal{display:flex;flex-direction:column;gap:5px}
+.uml-pbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1px solid var(--ms-efe6d8,#efe6d8);background:#fff;border-radius:8px;padding:6px 9px;font-size:12px;color:var(--ms-0f172a,#0f172a);cursor:grab}
+.uml-pbtn:hover{border-color:var(--ms-d99b26,#d99b26);background:var(--ms-faf0de,#faf0de)}.uml-pbtn.active{background:var(--ms-4a2e1b,#4a2e1b);color:#fff;border-color:var(--ms-4a2e1b,#4a2e1b)}
+.uml-pbtn svg{flex:none;width:30px;height:16px}.uml-pbtn.edge{cursor:pointer}
+.uml-canvas{position:relative;border:1px solid var(--ms-efe6d8,#efe6d8);border-radius:12px;background:#fff;height:640px;overflow:hidden}
+.uml-canvas svg{width:100%;height:100%;display:block;touch-action:none;outline:0;user-select:none}
+.uml-canvas.pan svg{cursor:grab}.uml-canvas.linking svg{cursor:crosshair}
+.uml-zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:4px;background:#fffdf8e6;border:1px solid var(--ms-efe6d8,#efe6d8);border-radius:9px;padding:4px;align-items:center}
+.uml-zoom .btn{padding:2px 9px}.uml-zoom span{font-size:11px;color:var(--ms-8a6a45,#8a6a45);min-width:42px;text-align:center}
+.uml-hint{position:absolute;left:10px;top:10px;font-size:11px;background:var(--ms-faf0de,#faf0de);color:var(--ms-8a6a45,#8a6a45);border:1px solid var(--ms-ecd9b8,#ecd9b8);border-radius:8px;padding:4px 10px;max-width:60%}
+.uml-hint:empty{display:none}
+.uml-props label.form-label{font-size:11px;margin-bottom:3px}.uml-props .form-control,.uml-props .form-select{font-size:12px}
+.uml-props textarea{font-family:ui-monospace,Consolas,monospace;font-size:11px}
+.uml-props .sec{margin-bottom:11px}.uml-props [hidden]{display:none!important}
+.uml-empty{font-size:12px;color:#8a9299;line-height:1.6}
+.uml-tabgrp{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px}
+.uml-tabgl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ms-b45309,#b45309);min-width:76px}

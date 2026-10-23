@@ -1,7 +1,7 @@
 export const FRONTEND_IDS = ["next", "react-vite"] as const;
-export const BACKEND_IDS = ["next", "nestjs", "elysia"] as const;
-export const DATABASE_IDS = ["postgres", "mysql", "mongodb"] as const;
-export const ORM_IDS = ["drizzle", "prisma", "mongoose"] as const;
+export const BACKEND_IDS = ["none", "next", "nestjs", "elysia"] as const;
+export const DATABASE_IDS = ["none", "postgres", "mysql", "mongodb"] as const;
+export const ORM_IDS = ["none", "drizzle", "prisma", "mongoose"] as const;
 export const UI_IDS = ["medha-bootstrap"] as const;
 export const AUTH_IDS = ["none", "credentials"] as const;
 export const TESTING_IDS = ["vitest", "none"] as const;

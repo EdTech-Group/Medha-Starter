@@ -32,11 +32,14 @@ afterAll(async () => {
 
 for (const runtime of RUNTIMES) {
   describe(`compiled CLI on ${runtime.name}`, () => {
-    const run = (args: string[], cwd = root) => {
+    const run = (args: string[], cwd = root, templates: string | null = fixtures) => {
+      const env: Record<string, string | undefined> = { ...process.env, NO_COLOR: "1" };
+      if (templates) env.MEDHA_STARTER_TEMPLATES_DIR = templates;
+      else delete env.MEDHA_STARTER_TEMPLATES_DIR;
       const result = spawnSync(runtime.command, [...runtime.args, ...args], {
         cwd,
         encoding: "utf8",
-        env: { ...process.env, NO_COLOR: "1", MEDHA_STARTER_TEMPLATES_DIR: fixtures },
+        env,
       });
       return { code: result.status, stdout: result.stdout, stderr: result.stderr };
     };
@@ -68,7 +71,17 @@ for (const runtime of RUNTIMES) {
     test("generates a project with its README", async () => {
       const name = `app-${runtime.command}`;
       const result = run(
-        [name, "--yes", "--allow-planned", "--offline", "--no-install", "--no-git", "--pm", "bun"],
+        [
+          name,
+          "--yes",
+          "--allow-planned",
+          "--offline",
+          "--no-install",
+          "--no-git",
+          "--pm",
+          "bun",
+          ...["--frontend", "next", "--backend", "next", "--db", "postgres"],
+        ],
         workspace,
       );
       expect(result.stderr).toBe("");
@@ -80,6 +93,25 @@ for (const runtime of RUNTIMES) {
       expect(readme).toContain("1. Install dependencies: `bun install`");
       const packageJson = JSON.parse(await readFile(join(workspace, name, "package.json"), "utf8"));
       expect(packageJson.dependencies.next).toBe("^16.4.2");
+    });
+
+    test("generates the default React app from the shipped templates", async () => {
+      const name = `react-${runtime.command}`;
+      const result = run([name, "--yes", "--offline", "--no-install", "--no-git"], workspace, null);
+      expect(result.stderr).toBe("");
+      expect(result.code).toBe(0);
+
+      const project = join(workspace, name);
+      const stack = JSON.parse(await readFile(join(project, "medha.json"), "utf8")).stack;
+      expect(stack).toMatchObject({ frontend: "react-vite", backend: "none", database: "none" });
+      const packageJson = JSON.parse(await readFile(join(project, "package.json"), "utf8"));
+      expect(packageJson.dependencies).toHaveProperty("react");
+      expect(packageJson.dependencies.bootstrap).toBe("~5.0.2");
+      expect(await readFile(join(project, "src", "medha", "routes.tsx"), "utf8")).toContain(
+        '"/dashboard"',
+      );
+      expect(await readFile(join(project, "AGENTS.md"), "utf8")).not.toContain("{{");
+      expect(result.stdout).not.toContain(".env.example");
     });
   });
 }

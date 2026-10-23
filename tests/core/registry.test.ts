@@ -36,10 +36,10 @@ describe("registry", () => {
     );
   });
 
-  test("defaults refer to registered options", () => {
-    expect(getOption("frontend", DEFAULT_STACK.frontend)).toBeDefined();
-    expect(getOption("backend", DEFAULT_STACK.backend)).toBeDefined();
-    expect(getOption("database", DEFAULT_STACK.database)).toBeDefined();
-    expect(getOption("ui", DEFAULT_STACK.ui)).toBeDefined();
+  test("defaults refer to available options", () => {
+    expect(getOption("frontend", DEFAULT_STACK.frontend)?.status).toBe("available");
+    expect(getOption("ui", DEFAULT_STACK.ui)?.status).toBe("available");
+    expect(getOption("auth", DEFAULT_STACK.auth)?.status).toBe("available");
+    expect(getOption("testing", DEFAULT_STACK.testing)?.status).toBe("available");
   });
 });

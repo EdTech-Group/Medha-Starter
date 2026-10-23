@@ -19,8 +19,18 @@ export async function removeDir(path: string): Promise<void> {
   await rm(path, { recursive: true, force: true });
 }
 
+/**
+ * The full-stack baseline most generator tests use (and the demo fixture layers model):
+ * Next.js frontend and backend with PostgreSQL. `partial` overrides any of it.
+ */
+export const FULL_STACK: PartialStackConfig = {
+  frontend: "next",
+  backend: "next",
+  database: "postgres",
+};
+
 export function makeStack(partial: PartialStackConfig = {}): StackConfig {
-  return completeStack(partial, "npm");
+  return completeStack({ ...FULL_STACK, ...partial }, "npm");
 }
 
 export function makeProject(targetDirectory: string, stack: StackConfig): ProjectConfig {

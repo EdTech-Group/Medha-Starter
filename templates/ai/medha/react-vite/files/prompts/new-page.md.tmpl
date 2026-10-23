@@ -1,0 +1,19 @@
+Read AGENTS.md and MEDHA_STYLE.md first.
+
+Add a <workspace | website | auth> page called "<page name>" at `<route, e.g. /dashboard/reports>`.
+
+What the page shows:
+- <section 1, e.g. a row of four metrics: …>
+- <section 2, e.g. a table of … with columns …>
+
+Requirements:
+- Create `src/pages/<PageName>Page.tsx` using `AppShell` (workspace), `SiteShell` (website) or
+  `AuthShell` (auth). Start with `PageHeading`, then `Panel`s in Bootstrap grid rows.
+- Find the closest existing markup in `src/medha/pages/` (see `src/medha/CATALOG.md`) and reuse
+  its class names instead of inventing new styles.
+- Register the route in `src/App.tsx`; for a workspace page add a sidebar link in
+  `src/medha/chrome/Sidebar.tsx`.
+- Use typed props and sample data in a separate `const`, ready to be replaced by an API call.
+- Add a test next to the page that renders it at its route.
+- Run `{{ runScript }} lint`, `{{ runScript }} typecheck`, `{{ runScript }} check:style`,
+  `{{ runScript }} test` and `{{ runScript }} build`, and report the results.

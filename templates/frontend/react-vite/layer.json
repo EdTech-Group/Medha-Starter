@@ -1,0 +1,57 @@
+{
+  "id": "frontend/react-vite",
+  "description": "React single-page app built with Vite and strict TypeScript.",
+  "packageJson": {
+    "type": "module",
+    "engines": {
+      "node": ">=22.22.0"
+    },
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "preview": "vite preview",
+      "typecheck": "tsc --noEmit",
+      "lint": "biome check .",
+      "format": "biome check --write ."
+    },
+    "dependencies": {
+      "react": "^19.3.1",
+      "react-dom": "^19.3.1",
+      "react-router": "^8.5.0"
+    },
+    "devDependencies": {
+      "@biomejs/biome": "2.6.2",
+      "@types/react": "^19.3.0",
+      "@types/react-dom": "^19.3.0",
+      "@vitejs/plugin-react": "^6.1.2",
+      "typescript": "^7.0.2",
+      "vite": "^8.3.5"
+    }
+  },
+  "pinned": ["@biomejs/biome"],
+  "readme": {
+    "features": [
+      "React 19 single-page app with Vite, strict TypeScript and React Router"
+    ],
+    "prerequisites": ["Node.js 22.22 or newer (Vite 8, React Router 8 and the test tools need it)"],
+    "scripts": {
+      "dev": "Starts the development server on http://localhost:5173",
+      "build": "Builds the production bundle into `dist/`",
+      "preview": "Serves the production build locally",
+      "typecheck": "Checks types without emitting files",
+      "lint": "Checks lint rules and formatting with Biome",
+      "format": "Formats files and applies safe lint fixes with Biome"
+    },
+    "structure": {
+      "index.html": "HTML entry point",
+      "src/main.tsx": "Mounts the app",
+      "vite.config.ts": "Vite configuration"
+    },
+    "sections": [
+      {
+        "title": "Formatting and linting",
+        "body": "Biome formats and lints the project; `{{ runScript }} lint` fails on any difference. `@biomejs/biome` is pinned to an exact version because Biome's formatting output can change between releases, which would otherwise make `lint` fail on a fresh project."
+      }
+    ]
+  }
+}

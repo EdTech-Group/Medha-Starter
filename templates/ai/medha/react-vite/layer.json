@@ -1,0 +1,29 @@
+{
+  "id": "ai/medha/react-vite",
+  "description": "Guidance for AI coding assistants, prompt recipes and the Medha style check.",
+  "packageJson": {
+    "scripts": {
+      "check:style": "node scripts/check-style.mjs"
+    }
+  },
+  "readme": {
+    "features": [
+      "Ready for AI coding assistants: `AGENTS.md` plus entry points for Claude Code, Gemini, GitHub Copilot, Cursor and Windsurf, and prompt recipes in `prompts/`"
+    ],
+    "scripts": {
+      "check:style": "Fails on hard-coded colours, other UI kits, or the logo used outside `<MedhaLogo />`"
+    },
+    "structure": {
+      "AGENTS.md": "How to work on this project: commands, structure, rules (read by AI assistants)",
+      "MEDHA_STYLE.md": "The Medha style guide every contributor and assistant follows",
+      "prompts": "Prompt recipes for common tasks (new page, new component, API, review)",
+      "scripts/check-style.mjs": "The Medha style check"
+    },
+    "sections": [
+      {
+        "title": "Working with AI assistants",
+        "body": "`AGENTS.md` and `MEDHA_STYLE.md` are the single source of truth for how code in this project is written. Claude Code (`CLAUDE.md`), Gemini (`GEMINI.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursor/rules/`) and Windsurf (`.windsurf/rules/`) are all pointed at them; Codex and other tools read `AGENTS.md` directly.\n\n`prompts/` has ready-made prompts for common tasks: copy one into your assistant and fill in the blanks. `{{ runScript }} check:style` enforces the visual rules whichever tool wrote the code."
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+body.me-embed{background:#f8f7f4;margin:0;font-size:14px}
+.me-main{padding:12px 16px 84px}
+.me-bar{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fffdf8;border-top:1px solid #e4d4be;box-shadow:0 -4px 14px rgba(0,0,0,.08);z-index:5}
+.me-msg{margin-right:auto;font-size:12px;color:#7a6a58}.me-msg.bad{color:#b42318;font-weight:600}
+.me-embed .te-grp:last-child{display:none}
